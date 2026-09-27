@@ -4,7 +4,7 @@ These are the checks I use before calling a build "working."
 
 ## Primary test site
 
-**https://play.arc.gg/** is one of the main websites used while testing WebLite.
+**https://play.arc.gg/** is one of the main websites used while testing WebLite. It remains the main stress-test page for the project, while Study mode should also be tried on a normal learning/article page.
 
 If you are testing or reviewing the project, this is a good place to start. It is useful for seeing the difference between Normal, Balanced and Saver modes and for watching live request / transfer / resource activity.
 
@@ -36,6 +36,18 @@ WebLite was also checked on other kinds of sites because one website cannot repr
 - important images are not blindly removed
 - obvious autoplay media is reduced
 - page is still usable
+
+## Study mode
+
+- readable text stays intact
+- same-site diagrams/images remain available
+- cross-site images are reduced
+- autoplay video/audio stays stopped
+- web fonts and third-party embeds are reduced
+- motion is reduced without using the full Freeze behavior
+- **Load once** restores an individual image, video or embed when it is actually needed for schoolwork
+
+A useful student test is to open a study article or learning page, enable Study mode, and confirm that the lesson remains understandable even with optional resources reduced.
 
 ## Saver mode
 
