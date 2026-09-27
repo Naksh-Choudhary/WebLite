@@ -19,6 +19,16 @@ The goal is to:
 
 The **Load once** idea came directly from that trade-off.
 
+## Student use case
+
+A specific use case added in WebLite 1.4 is studying on limited or unreliable internet.
+
+Students may be using a phone hotspot, crowded school Wi-Fi or a slower home connection. A learning page can still load autoplay video, third-party embeds, custom fonts, cross-site imagery and decorative motion that are not always necessary for reading the lesson.
+
+**Study mode** keeps text and same-site diagrams, reduces those optional resources, and lets the student restore any blocked item with **Load once** if it turns out to be important.
+
+This feature was developed for the CSC Back-to-School Hackathon, but it is part of the normal WebLite product rather than a separate hackathon-only version.
+
 ## Sustainability angle
 
 WebLite does not claim that blocking one image creates a huge environmental impact.
