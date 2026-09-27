@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WebLite Settings</title>
+  <link rel="stylesheet" href="settings.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <header class="page-header">
+      <div class="brand-wrap">
+        <div class="mark">W</div>
+        <div>
+          <p class="eyebrow">WEBLITE CONTROL CENTER</p>
+          <h1>Settings</h1>
+          <p>Minimal by default. Adjustable when you need it.</p>
+        </div>
+      </div>
+      <button id="openTutorial" class="secondary">Open tutorial</button>
+    </header>
+
+    <section class="card">
+      <div class="card-title"><div><h2>Appearance</h2><p>These settings only change WebLite's own interface.</p></div></div>
+      <div class="setting-row">
+        <div><strong>Theme</strong><span>Follow your system or force light/dark.</span></div>
+        <div class="segmented" id="themeGroup">
+          <button data-theme="system">System</button>
+          <button data-theme="dark">Dark</button>
+          <button data-theme="light">Light</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div><strong>Accent</strong><span>Ivorian Blue is the default; choose another accent if you want.</span></div>
+        <div class="swatches" id="accentGroup">
+          <button data-accent="ivorian" style="--swatch:#6aa6cd" aria-label="Ivorian Blue" title="Ivorian Blue"></button>
+          <button data-accent="ocean" style="--swatch:#60a5fa" aria-label="Ocean Blue" title="Ocean Blue"></button>
+          <button data-accent="lavender" style="--swatch:#a78bfa" aria-label="Lavender" title="Lavender"></button>
+          <button data-accent="sage" style="--swatch:#69b89a" aria-label="Sage" title="Sage"></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-title"><div><h2>Browsing defaults</h2><p>Used when you open WebLite on a site for the first time.</p></div></div>
+      <div class="setting-row">
+        <div><strong>Default mode</strong><span>Balanced is recommended for everyday use.</span></div>
+        <select id="defaultMode">
+          <option value="balanced">Balanced</option>
+          <option value="saver">Saver</option>
+          <option value="ultra">Ultra</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <div><strong>Remember site mode</strong><span>Remember which preset you last selected for each website.</span></div>
+        <label class="switch"><input id="rememberSiteMode" type="checkbox" /><span></span></label>
+      </div>
+      <div class="setting-row">
+        <div><strong>Extension badge</strong><span>Show LITE / SAVE / MAX on the toolbar icon while active.</span></div>
+        <label class="switch"><input id="showBadge" type="checkbox" /><span></span></label>
+      </div>
+      <div class="shortcut-note"><strong>Quick toggle:</strong> Alt + Shift + L on the current tab.</div>
+    </section>
+
+    <section class="card">
+      <div class="card-title"><div><h2>Custom mode defaults</h2><p>Used when you choose Custom in the popup.</p></div></div>
+      <div class="setting-row"><div><strong>Images</strong><span>Control image blocking.</span></div><select id="customImages"><option value="none">Keep</option><option value="thirdParty">3rd-party only</option><option value="all">Block all</option></select></div>
+      <div class="setting-row"><div><strong>Video & audio</strong><span>Block media downloads.</span></div><label class="switch"><input id="customMedia" type="checkbox" /><span></span></label></div>
+      <div class="setting-row"><div><strong>Web fonts</strong><span>Use local system fonts instead.</span></div><label class="switch"><input id="customFonts" type="checkbox" /><span></span></label></div>
+      <div class="setting-row"><div><strong>Embeds</strong><span>Control iframe/embed blocking.</span></div><select id="customFrames"><option value="none">Keep</option><option value="thirdParty">3rd-party only</option><option value="all">Block all</option></select></div>
+      <div class="setting-row"><div><strong>Motion</strong><span>Reduce CSS motion or freeze scripted animation loops.</span></div><select id="customMotion"><option value="none">Keep</option><option value="reduce">Reduce</option><option value="freeze">Freeze</option></select></div>
+      <div class="setting-row"><div><strong>Stop autoplay</strong><span>Pause auto-starting audio/video.</span></div><label class="switch"><input id="customAutoplay" type="checkbox" /><span></span></label></div>
+    </section>
+
+    <section class="card impact-card">
+      <div class="card-title"><div><h2>Measured impact</h2><p>Only counts pages where WebLite had a matching normal-load baseline.</p></div></div>
+      <div class="impact-grid">
+        <div><strong id="statSaved">0 KB</strong><span>measured saved</span></div>
+        <div><strong id="statPages">0</strong><span>optimized loads</span></div>
+        <div><strong id="statRequests">0</strong><span>requests avoided</span></div>
+        <div><strong id="statBest">0%</strong><span>best measured reduction</span></div>
+      </div>
+      <button id="resetStats" class="danger-ghost">Reset impact stats</button>
+    </section>
+
+    <section class="card privacy-card">
+      <div class="privacy-icon">✓</div>
+      <div><h2>Private by design</h2><p>WebLite does not use an account, analytics service, external API, or cloud backend. Live page measurements stay in your browser. Cookie telemetry uses Chrome’s cookie API to count applicable cookies, including HttpOnly cookies, plus change events. Cookie values are never displayed, stored by WebLite, or sent anywhere.</p></div>
+    </section>
+
+    <div id="saveToast" class="toast">Saved</div>
+  </main>
+  <script src="settings.js"></script>
+</body>
+</html>

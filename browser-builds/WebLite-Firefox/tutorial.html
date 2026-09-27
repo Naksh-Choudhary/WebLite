@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How WebLite Works</title>
+  <link rel="stylesheet" href="tutorial.css" />
+</head>
+<body>
+  <main class="tutorial-shell">
+    <nav class="nav"><div class="nav-brand"><div class="mark">W</div><strong>WebLite</strong></div><button id="openSettings">Settings</button></nav>
+
+    <section class="hero">
+      <p class="eyebrow">WELCOME TO WEBLITE 1.3</p>
+      <h1>Use the web.<br><span>Not all of its weight.</span></h1>
+      <p class="lead">WebLite is a one-click low-data layer for modern browsers. It trims optional heavy resources before they download and shows live, local page telemetry while you browse.</p>
+      <div class="hero-actions"><button id="closeTab" class="primary">Got it — start browsing</button><span>Quick toggle: <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>L</kbd></span></div>
+    </section>
+
+    <section class="section">
+      <div class="section-title"><p>01</p><h2>Choose the right mode</h2></div>
+      <div class="mode-grid">
+        <article><div class="mode-badge">BALANCED</div><h3>Everyday mode</h3><p>Blocks media requests, blocks web-font downloads, uses a safe system-font fallback for simple text, stops autoplay and trims third-party embeds. Images stay available. Smart motion control escalates on animation-heavy pages.</p><strong>Best starting point</strong></article>
+        <article><div class="mode-badge">SAVER</div><h3>Hotspot mode</h3><p>Adds third-party image blocking, all-embed blocking and Motion Shield to freeze scripted animation loops.</p><strong>More saving, less decoration</strong></article>
+        <article><div class="mode-badge">ULTRA</div><h3>Maximum saving</h3><p>Blocks images, media, web fonts and embeds, while Motion Shield freezes scripted visual loops. Main text, CSS and scripts remain available.</p><strong>For tight data limits</strong></article>
+        <article><div class="mode-badge">CUSTOM</div><h3>Your rules</h3><p>Choose image scope, media, fonts, embeds, motion level and autoplay separately.</p><strong>Fine-grained control</strong></article>
+      </div>
+    </section>
+
+    <section class="section flow-section">
+      <div class="section-title"><p>02</p><h2>What happens when you switch it on?</h2></div>
+      <div class="flow">
+        <div><span>1</span><strong>Capture baseline</strong><p>WebLite records the current normal page’s request count and browser-observed resource size before any blocking begins.</p></div>
+        <b>→</b>
+        <div><span>2</span><strong>Add network rules</strong><p>The browser receives tab-scoped blocking rules for the selected categories.</p></div>
+        <b>→</b>
+        <div><span>3</span><strong>Reload lighter</strong><p>The page reloads so blocked resources are stopped before they download.</p></div>
+        <b>→</b>
+        <div><span>4</span><strong>Compare</strong><p>WebLite compares the lighter load with the saved normal baseline.</p></div>
+      </div>
+    </section>
+
+
+    <section class="section split">
+      <div class="explain-card"><p class="eyebrow">LIVE TELEMETRY</p><h2>See the page change in real time.</h2><p>The popup refreshes live measurements for observed page data, requests, cross-site resources, cookies, images, scripts, styles, fonts, media, frames, DOM nodes and load time. When a normal baseline exists, savings update while the lighter page loads.</p></div>
+      <div class="explain-card"><p class="eyebrow">COOKIE ACTIVITY</p><h2>Count activity, not your data.</h2><p>WebLite uses the browser’s cookie API to count cookies applicable to the current page, including HttpOnly cookies, and tracks cookie change events. Cookie names and values are never shown, stored by WebLite, or sent to a server.</p></div>
+    </section>
+    <section class="section split">
+      <div class="explain-card"><p class="eyebrow">WHY THE RELOAD?</p><h2>Hiding is not saving.</h2><p>If an extension hides a video after the browser has already downloaded it, the data is already gone. WebLite uses the browser's network-rule system first, then reloads so the request can be blocked before transfer.</p></div>
+      <div class="explain-card"><p class="eyebrow">WHAT DOES “MEASURED” MEAN?</p><h2>No fake precision.</h2><p>Browser Resource Timing does not expose exact byte sizes for every cached or cross-origin resource. WebLite therefore reports <em>browser-observed data</em> and measured savings instead of pretending to be an ISP-level data meter.</p></div>
+    </section>
+
+    <section class="section split">
+      <div class="explain-card"><p class="eyebrow">MEDIA GUARD</p><h2>Pause the video, not just the tag.</h2><p>WebLite blocks normal media requests, common streaming segment URLs, pauses media repeatedly, and intercepts scripted <code>play()</code> calls. This catches many sites that use blobs or JavaScript players.</p></div>
+      <div class="explain-card"><p class="eyebrow">MOTION SHIELD</p><h2>Designed for animation-heavy pages.</h2><p>CSS animations are cancelled directly. Saver and Ultra also suppress scripted animation-frame loops; Balanced can automatically escalate when a page contains lots of animations, videos or canvases.</p></div>
+    </section>
+
+    <section class="section split">
+      <div class="explain-card"><p class="eyebrow">LOAD ONCE</p><h2>Blocked does not mean inaccessible.</h2><p>When WebLite blocks a visible image, video, or embed, it leaves a compact placeholder. Choose <b>Load once</b> to allow that item for the current page load without turning WebLite off.</p></div>
+      <div class="explain-card"><p class="eyebrow">FONT SAFETY</p><h2>Save font data without wrecking layouts.</h2><p>WebLite blocks web-font downloads but only replaces fonts on simple text containers. Complex positioned or animated typography is left alone to prevent overlap and broken layouts.</p></div>
+    </section>
+
+    <section class="section">
+      <div class="section-title"><p>03</p><h2>When a page needs something WebLite blocked</h2></div>
+      <div class="tips-grid">
+        <article><strong>Blocked video or image?</strong><p>Use the small <b>Load once</b> button on its WebLite placeholder. The temporary exception clears on reload/navigation.</p></article>
+        <article><strong>Images matter on this page?</strong><p>Use Balanced instead of Saver/Ultra, or set Images to Keep.</p></article>
+        <article><strong>Login/payment widget not showing?</strong><p>Some services live inside third-party frames. Restore Normal for that page.</p></article>
+        <article><strong>Protected page unavailable?</strong><p>Browsers protect internal pages and their extension stores from normal extension modification.</p></article>
+      </div>
+    </section>
+
+    <section class="section privacy">
+      <div class="shield">✓</div><div><p class="eyebrow">PRIVACY</p><h2>Your browsing stays yours.</h2><p>No account. No analytics. No external server. No cloud processing. WebLite's settings and measured impact are stored locally in your browser profile.</p></div>
+    </section>
+
+    <footer><strong>WebLite 1.3</strong><span>Built for a lighter, more controllable web.</span></footer>
+  </main>
+  <script src="tutorial.js"></script>
+</body>
+</html>

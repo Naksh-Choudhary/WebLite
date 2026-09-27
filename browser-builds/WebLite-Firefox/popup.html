@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WebLite</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">W</div>
+        <div>
+          <div class="brand-name">WebLite</div>
+          <div class="brand-sub">LIGHTER WEB · LIVE</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button id="tutorialButton" class="icon-button" title="How WebLite works" aria-label="Open tutorial">?</button>
+        <button id="settingsButton" class="icon-button" title="Settings" aria-label="Open settings">⚙</button>
+      </div>
+    </header>
+
+    <section class="site-card">
+      <div class="site-main">
+        <div class="site-icon" aria-hidden="true"><span></span></div>
+        <div class="site-copy">
+          <span id="statusLabel">Normal browsing</span>
+          <strong id="hostLabel">Current website</strong>
+        </div>
+      </div>
+      <label class="switch" aria-label="Toggle WebLite">
+        <input id="liteToggle" type="checkbox" />
+        <span class="slider"></span>
+      </label>
+    </section>
+
+    <section class="panel mode-panel">
+      <div class="section-head">
+        <span>MODE</span>
+        <small id="modeHint">Balanced keeps the important page and cuts heavy extras. Blocked media can be loaded once.</small>
+      </div>
+      <div class="mode-tabs" role="tablist" aria-label="WebLite mode">
+        <button class="mode-tab active" data-mode="balanced">Balanced</button>
+        <button class="mode-tab" data-mode="saver">Saver</button>
+        <button class="mode-tab" data-mode="ultra">Ultra</button>
+        <button class="mode-tab" data-mode="custom">Custom</button>
+      </div>
+      <div id="presetSummary" class="preset-summary"></div>
+
+      <details id="customDetails" class="advanced hidden">
+        <summary>Custom controls</summary>
+        <div id="customControls" class="custom-controls">
+          <div class="control-row">
+            <div><strong>Images</strong><span>Keep, limit cross-site images, or block all.</span></div>
+            <select id="imagesSelect"><option value="none">Keep</option><option value="thirdParty">3rd-party</option><option value="all">Block all</option></select>
+          </div>
+          <div class="control-row"><div><strong>Video & audio</strong><span>Stop media downloads.</span></div><input id="mediaToggle" type="checkbox" /></div>
+          <div class="control-row"><div><strong>Web fonts</strong><span>Prefer system fonts.</span></div><input id="fontsToggle" type="checkbox" /></div>
+          <div class="control-row">
+            <div><strong>Embeds</strong><span>Control frames and embedded widgets.</span></div>
+            <select id="framesSelect"><option value="none">Keep</option><option value="thirdParty">3rd-party</option><option value="all">Block all</option></select>
+          </div>
+          <div class="control-row"><div><strong>Motion</strong><span>Reduce CSS motion or freeze scripted animation.</span></div><select id="motionSelect"><option value="none">Keep</option><option value="reduce">Reduce</option><option value="freeze">Freeze</option></select></div>
+          <div class="control-row"><div><strong>Stop autoplay</strong><span>Pause auto-starting media.</span></div><input id="autoplayToggle" type="checkbox" /></div>
+        </div>
+      </details>
+    </section>
+
+    <section class="panel live-panel">
+      <div class="section-head live-head">
+        <span>LIVE PAGE</span>
+        <small><i class="live-dot"></i><span id="liveStatus">measuring now</span></small>
+      </div>
+
+      <div class="live-hero">
+        <div class="hero-copy">
+          <span>Data saved now</span>
+          <strong id="bytesSaved">0 B</strong>
+          <small id="comparisonStatus">Enable WebLite to compare with a normal load</small>
+        </div>
+        <div class="ring" id="savingRing"><span id="ringLabel">0%</span></div>
+      </div>
+
+      <div class="live-grid">
+        <div><span>OBSERVED DATA</span><strong id="sizeNow">0 B</strong></div>
+        <div><span>REQUESTS</span><strong id="requestsNow">0</strong></div>
+        <div><span>CROSS-SITE</span><strong id="thirdPartyNow">0</strong></div>
+        <div><span>COOKIES</span><strong id="cookiesNow">0</strong></div>
+      </div>
+
+      <div class="delta-row">
+        <span><b id="savedPercent">0%</b> transfer reduction</span>
+        <span><b id="requestsSaved">0</b> requests avoided</span>
+        <span><b id="cookieChanges">0</b> cookie changes</span>
+      </div>
+
+      <details class="telemetry-details">
+        <summary>Resource details</summary>
+        <div class="resource-grid">
+          <div><span>Images</span><b id="resImages">0</b></div>
+          <div><span>Scripts</span><b id="resScripts">0</b></div>
+          <div><span>Styles</span><b id="resCss">0</b></div>
+          <div><span>Fonts</span><b id="resFonts">0</b></div>
+          <div><span>Media</span><b id="resMedia">0</b></div>
+          <div><span>Frames</span><b id="resFrames">0</b></div>
+          <div><span>DOM nodes</span><b id="domNodes">0</b></div>
+          <div><span>HttpOnly cookies</span><b id="cookieProtected">0</b></div>
+          <div><span>Load time</span><b id="loadTime">live</b></div>
+        </div>
+        <p class="telemetry-note">Observed data uses the browser's Resource Timing information and may exclude hidden cross-origin byte sizes. Cookie counts use the browser extension cookie API; WebLite never displays or saves cookie values.</p>
+      </details>
+      <div id="baselineMessage" class="info-note hidden"></div>
+    </section>
+
+    <section class="impact-strip">
+      <div><span>ALL-TIME MEASURED SAVED</span><strong id="totalSaved">0 KB</strong></div>
+      <div><span>OPTIMIZED LOADS</span><strong id="pagesOptimized">0</strong></div>
+    </section>
+
+    <footer class="footer-row">
+      <label class="remember-row"><input id="rememberMode" type="checkbox" checked /> Remember this site</label>
+      <button id="restoreButton" class="text-button">Restore normal</button>
+    </footer>
+
+    <div id="errorBox" class="error hidden"></div>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>
