@@ -122,6 +122,7 @@ I kept a few short notes from the project:
 - [How it works](docs/architecture.md)
 - [Testing notes](docs/testing-notes.md)
 - [Project notes](docs/project-notes.md)
+- [CSC Back-to-School notes](docs/csc-back-to-school.md)
 
 ## Current limitations
 
