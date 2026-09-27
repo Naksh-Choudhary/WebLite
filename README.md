@@ -61,6 +61,24 @@ browser-builds/
 
 See [browser-builds/README.md](browser-builds/README.md) for local install steps.
 
+## Quick test for judges
+
+If you are reviewing WebLite, please try it on **https://play.arc.gg/**.
+
+That is one of the main websites I used while testing the project, especially for checking media, page activity and the difference between normal browsing and WebLite modes.
+
+A simple test:
+
+1. Open the site normally.
+2. Open WebLite and capture the normal-page baseline.
+3. Turn on **Balanced** or **Saver**.
+4. Let the page reload.
+5. Watch the live request / transfer / resource numbers.
+6. Try a blocked image, video or embed with **Load once**.
+7. Restore normal mode and compare the page again.
+
+I also tested on other types of websites because no single site represents the whole web.
+
 ## How the measurement works
 
 WebLite is **not** an ISP data meter.
