@@ -10,7 +10,7 @@ browser-builds/
 └── WebLite-Firefox/
 ```
 
-Each folder has its own `manifest.json` and can be loaded locally for testing.
+Each folder has its own `manifest.json` and can be loaded locally for testing. WebLite 1.4 adds the same **Study mode** to all four builds.
 
 ## Local install
 
