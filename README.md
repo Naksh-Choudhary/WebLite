@@ -8,9 +8,10 @@ The project started from a simple annoyance: sometimes I only want the useful pa
 
 ## What it does
 
-WebLite has four modes:
+WebLite has five modes:
 
 - **Balanced** — keeps normal browsing comfortable while reducing some optional weight
+- **Study** — keeps readable text and same-site diagrams while trimming cross-site images, autoplay media, web fonts, third-party embeds and distracting motion
 - **Saver** — stronger reduction for media, fonts, embeds and motion
 - **Ultra** — the strictest mode for pages where visuals are not important
 - **Custom** — lets you choose exactly what WebLite should reduce
@@ -25,6 +26,14 @@ The popup also shows browser-observed page activity such as:
 - measured savings compared with a normal-page baseline
 
 If WebLite blocks something you actually want, images, videos and embeds can be loaded **once** without turning the extension off completely.
+
+## For students
+
+WebLite also has a **Study mode** for schoolwork on limited or unstable connections.
+
+The idea is not to strip a learning page down to plain text. Study mode tries to keep the things students are likely to need — readable content and same-site diagrams — while reducing things that are often optional during a study session, such as autoplay media, third-party embeds, cross-site images, web fonts and distracting motion.
+
+That can be useful when a student is working through a hotspot, slow home connection, crowded school Wi-Fi, or simply wants a quieter page. If a blocked diagram, video or embed is actually part of the lesson, **Load once** brings back only that item.
 
 ## Why it is not just an image blocker
 
@@ -125,7 +134,7 @@ That is why WebLite has modes and one-time exceptions instead of one universal s
 
 ## Project origin
 
-WebLite is an ongoing personal project. Its first public version was also developed and entered during the **Beginner's Paradise / FirstCommit** hackathon, which gave me a good reason to turn the early prototype into something more complete.
+WebLite is an ongoing personal project. Its early public versions were shaped through student hackathons, including **Beginner's Paradise / FirstCommit**. The **Study mode** was added for the **CSC Back-to-School Hackathon** as a real school-focused use case, while the main extension remains useful for everyday browsing outside competitions.
 
 AI tools were used for brainstorming, debugging and code assistance during development. I manually tested the extension, changed approaches when they failed on real sites, and documented those trade-offs in this repository.
 
