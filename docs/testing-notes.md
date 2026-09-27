@@ -2,11 +2,11 @@
 
 These are the checks I use before calling a build "working."
 
-## Main judge / demo test site
+## Primary test site
 
 **https://play.arc.gg/** is one of the main websites used while testing WebLite.
 
-If you are reviewing the project, please try WebLite there first. It is useful for seeing the difference between Normal, Balanced and Saver modes and for watching live request / transfer / resource activity.
+If you are testing or reviewing the project, this is a good place to start. It is useful for seeing the difference between Normal, Balanced and Saver modes and for watching live request / transfer / resource activity.
 
 Suggested test:
 
