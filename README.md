@@ -132,3 +132,13 @@ AI tools were used for brainstorming, debugging and code assistance during devel
 ---
 
 Built by **Naksh Choudhary**.
+
+## Project links
+
+- **GitHub profile:** [Naksh-Choudhary](https://github.com/Naksh-Choudhary)
+- **Project ideas & roadmaps:** [project-ideas](https://github.com/Naksh-Choudhary/project-ideas)
+- **ABLE accessibility project:** [ABLEHOST](https://github.com/Naksh-Choudhary/ABLEHOST)
+
+## Feedback and development
+
+WebLite is maintained as an ongoing project. Bug reports, browser-specific problems, testing results, and technical suggestions are welcome through GitHub Issues.
