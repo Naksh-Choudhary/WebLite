@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "WebLite",
-  "version": "1.3.0",
-  "description": "WebLite for Brave: low-data browsing, live savings, cookie telemetry, Motion Shield, safe fonts, and load-once media.",
+  "version": "1.4.0",
+  "description": "WebLite for Brave: lighter browsing with Study Mode, live savings, privacy-friendly telemetry, Motion Shield, and load-once media.",
   "minimum_chrome_version": "121",
   "permissions": [
     "storage",
