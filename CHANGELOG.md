@@ -2,6 +2,20 @@
 
 A short record of how WebLite changed from the first prototype into the current multi-browser build.
 
+## v1.4
+
+Added a real student-focused browsing mode while keeping WebLite useful outside school.
+
+- added **Study mode**
+- keeps text and same-site diagrams available
+- blocks cross-site images, media downloads, web fonts and third-party embeds
+- reduces distracting motion instead of fully freezing the page
+- keeps **Load once** available when a blocked resource is actually needed for the lesson
+- added Study mode to default settings, tutorial and all four browser builds
+- bumped Chrome, Edge, Brave and Firefox packages to 1.4.0
+
+This version was developed for the CSC Back-to-School Hackathon and will remain part of the normal WebLite project.
+
 ## v0.1
 
 The first working prototype.
