@@ -1,12 +1,13 @@
 # WebLite — Microsoft Edge
 
-This folder contains the Microsoft Edge build of **WebLite 1.3.0**.
+This folder contains the Microsoft Edge build of **WebLite 1.4.0**.
 
 WebLite is a lightweight browsing extension that reduces optional page resources while keeping the user in control of anything that gets blocked.
 
 ## Main features
 
-- Balanced, Saver, Ultra and Custom modes
+- Balanced, **Study**, Saver, Ultra and Custom modes
+- **Study mode** keeps text and same-site diagrams while trimming cross-site images, media, web fonts, third-party embeds and distracting motion
 - request-level blocking for selected resources
 - Media Guard for autoplay / scripted media
 - Motion Shield for heavy page animation
