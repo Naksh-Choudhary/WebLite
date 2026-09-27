@@ -3,12 +3,14 @@ const $ = (id) => document.getElementById(id);
 
 const PRESETS = {
   balanced:{images:"none",media:true,fonts:true,frames:"thirdParty",motionLevel:"reduce",pauseAutoplay:true},
+  study:{images:"thirdParty",media:true,fonts:true,frames:"thirdParty",motionLevel:"reduce",pauseAutoplay:true},
   saver:{images:"thirdParty",media:true,fonts:true,frames:"all",motionLevel:"freeze",pauseAutoplay:true},
   ultra:{images:"all",media:true,fonts:true,frames:"all",motionLevel:"freeze",pauseAutoplay:true}
 };
 
 const MODE_HINTS = {
   balanced:"Keeps images and core interactions, but trims heavy extras.",
+  study:"For study sessions: keeps text and same-site diagrams, trims cross-site images, autoplay media, web fonts and embeds.",
   saver:"Stronger media, embed and Motion Shield controls for hotspot use.",
   ultra:"Maximum saving: blocks images and freezes scripted motion too.",
   custom:"Choose exactly what WebLite should keep, reduce or freeze."
@@ -88,7 +90,7 @@ function renderPresetSummary(config){
 
 function renderState(){
   toggle.checked=!!tabState.enabled;
-  statusLabel.textContent=tabState.enabled?`${tabState.mode==="ultra"?"Ultra":tabState.mode==="saver"?"Saver":tabState.mode==="custom"?"Custom":"Balanced"} active`:"Normal browsing";
+  statusLabel.textContent=tabState.enabled?`${tabState.mode==="ultra"?"Ultra":tabState.mode==="saver"?"Saver":tabState.mode==="study"?"Study":tabState.mode==="custom"?"Custom":"Balanced"} active`:"Normal browsing";
   restoreButton.disabled=!tabState.enabled;
   document.querySelectorAll(".mode-tab").forEach(b=>b.classList.toggle("active",b.dataset.mode===tabState.mode));
   modeHint.textContent=MODE_HINTS[tabState.mode]||MODE_HINTS.balanced;
