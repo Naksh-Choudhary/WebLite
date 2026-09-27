@@ -2,6 +2,9 @@
 
 This folder contains the unpacked WebLite source for each supported browser.
 
+> **First time installing WebLite?**  
+> Use the full beginner guide: **[Download & Install WebLite](../DOWNLOAD-AND-INSTALL.md)**.
+
 ```text
 browser-builds/
 ├── WebLite-Chrome/
@@ -10,26 +13,93 @@ browser-builds/
 └── WebLite-Firefox/
 ```
 
-Each folder has its own `manifest.json` and can be loaded locally for testing. WebLite 1.4 adds the same **Study mode** to all four builds.
+Each browser folder directly contains its own `manifest.json`. WebLite 1.4 includes **Study mode** in all four builds.
 
-## Local install
+## Important: this folder is not what Chrome asks you to select
 
-### Chrome
+For Chrome, Edge and Brave, do **not** choose the `browser-builds` folder itself.
 
-Open `chrome://extensions` → turn on **Developer mode** → **Load unpacked** → choose `WebLite-Chrome`.
+Choose the folder for your browser:
 
-### Edge
+```text
+Chrome → WebLite-Chrome
+Edge   → WebLite-Edge
+Brave  → WebLite-Brave
+```
 
-Open `edge://extensions` → turn on **Developer mode** → **Load unpacked** → choose `WebLite-Edge`.
+Firefox is different: open `WebLite-Firefox` and choose its `manifest.json` file when Firefox asks for a temporary add-on.
 
-### Brave
+## Download first
 
-Open `brave://extensions` → turn on **Developer mode** → **Load unpacked** → choose `WebLite-Brave`.
+If you are viewing these folders on GitHub, you do not need to download each file one by one.
 
-### Firefox
+Return to the main WebLite repository page and use:
 
-Open `about:debugging` → **This Firefox** → **Load Temporary Add-on** → choose `manifest.json` inside `WebLite-Firefox`.
+**Code → Download ZIP**
 
-## Note
+Then extract the ZIP on your computer.
 
-The four builds are intentionally kept separate. Chrome, Edge and Brave are close to each other, while Firefox needs a few browser-specific packaging choices.
+If you cannot see the green **Code** button, you are probably still inside `browser-builds` or one of the browser folders. Click **WebLite** in the breadcrumb at the top of GitHub to return to the repository root.
+
+Direct repository ZIP:
+
+**https://github.com/Naksh-Choudhary/WebLite/archive/refs/heads/main.zip**
+
+## Chrome
+
+1. Extract the downloaded repository ZIP.
+2. Open `chrome://extensions`.
+3. Turn on **Developer mode**.
+4. Click **Load unpacked**.
+5. Select:
+
+```text
+WebLite-main/browser-builds/WebLite-Chrome
+```
+
+The selected folder itself should contain `manifest.json`.
+
+## Edge
+
+1. Open `edge://extensions`.
+2. Turn on **Developer mode**.
+3. Click **Load unpacked**.
+4. Select:
+
+```text
+WebLite-main/browser-builds/WebLite-Edge
+```
+
+## Brave
+
+1. Open `brave://extensions`.
+2. Turn on **Developer mode**.
+3. Click **Load unpacked**.
+4. Select:
+
+```text
+WebLite-main/browser-builds/WebLite-Brave
+```
+
+## Firefox
+
+1. Open `about:debugging`.
+2. Choose **This Firefox**.
+3. Click **Load Temporary Add-on**.
+4. Go to:
+
+```text
+WebLite-main/browser-builds/WebLite-Firefox
+```
+
+5. Select `manifest.json`.
+
+## Confirm the correct build
+
+The current build is **WebLite 1.4.0**.
+
+When you open the extension, the modes should be:
+
+**Balanced · Study · Saver · Ultra · Custom**
+
+If Study is missing, you are using an older local copy.
