@@ -34,6 +34,14 @@ const PRESETS = {
     motionLevel: "reduce",
     pauseAutoplay: true
   },
+  study: {
+    images: "thirdParty",
+    media: true,
+    fonts: true,
+    frames: "thirdParty",
+    motionLevel: "reduce",
+    pauseAutoplay: true
+  },
   saver: {
     images: "thirdParty",
     media: true,
@@ -202,7 +210,7 @@ async function updateBadge(tabId, enabled, mode) {
     await EXT.action.setBadgeText({ tabId, text: "" });
     return;
   }
-  const label = mode === "ultra" ? "MAX" : mode === "saver" ? "SAVE" : mode === "custom" ? "C" : "LITE";
+  const label = mode === "ultra" ? "MAX" : mode === "saver" ? "SAVE" : mode === "study" ? "STDY" : mode === "custom" ? "C" : "LITE";
   await EXT.action.setBadgeText({ tabId, text: label });
   await EXT.action.setBadgeBackgroundColor({ tabId, color: "#397bac" });
   if (typeof EXT.action.setBadgeTextColor === "function") {
