@@ -1,6 +1,6 @@
 # Learning log
 
-I wanted to keep this page simple and honest because "what did you learn?" is a big part of FirstCommit.
+These are the parts of WebLite that taught me the most while I was building and testing it.
 
 ## 1. Blocking after load is too late
 
@@ -70,4 +70,4 @@ Firefox still needs its own extension packaging / manifest decisions, so I kept 
 - animation / requestAnimationFrame behavior
 - cross-browser extension packaging
 
-I am still learning several of these. The point of this project was not to pretend I already knew them.
+I am still learning several of these. This project has been a good excuse to understand them properly instead of only reading about them.
