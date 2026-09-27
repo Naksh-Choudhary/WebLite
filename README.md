@@ -6,6 +6,27 @@ WebLite reduces optional page weight — things like heavy media, embeds, web fo
 
 The project started from a simple annoyance: sometimes I only want the useful part of a page, but the browser still loads a lot of extra stuff around it. I did not want to make another "block everything" extension, so WebLite is built around different strength levels and user control.
 
+## Download & install
+
+**New to browser extensions? Start here: [Download & Install WebLite](DOWNLOAD-AND-INSTALL.md).**
+
+Quick version:
+
+1. Download the repository ZIP from the main GitHub page using **Code → Download ZIP**.
+2. Extract it.
+3. Open `browser-builds/`.
+4. Choose the folder for your browser:
+   - `WebLite-Chrome`
+   - `WebLite-Edge`
+   - `WebLite-Brave`
+   - `WebLite-Firefox`
+5. Chrome / Edge / Brave: enable Developer mode and use **Load unpacked**.
+6. Firefox: use `about:debugging` → **This Firefox** → **Load Temporary Add-on**.
+
+If you are already inside a subfolder on GitHub and cannot see the green **Code** button, return to the main **WebLite** repository page first.
+
+The full guide includes exact browser-by-browser steps, the folder you must select, common errors, and how to confirm you loaded WebLite 1.4.0.
+
 ## What it does
 
 WebLite has five modes:
