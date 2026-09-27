@@ -2,6 +2,24 @@
 
 These are the checks I use before calling a build "working."
 
+## Main judge / demo test site
+
+**https://play.arc.gg/** is one of the main websites used while testing WebLite.
+
+If you are reviewing the project, please try WebLite there first. It is useful for seeing the difference between Normal, Balanced and Saver modes and for watching live request / transfer / resource activity.
+
+Suggested test:
+
+1. load the site normally
+2. capture the baseline
+3. enable Balanced
+4. compare the live values
+5. try Saver
+6. test any available Load once controls
+7. restore normal mode
+
+WebLite was also checked on other kinds of sites because one website cannot represent every page on the web.
+
 ## Basic install
 
 - extension loads without manifest errors
@@ -46,7 +64,7 @@ Check that values update instead of staying as dashes:
 
 A value of **0** is okay. A permanent placeholder is not.
 
-## Sites I use for stress testing
+## Other stress tests
 
 ### Apple.com
 
