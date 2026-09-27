@@ -1,19 +1,19 @@
 # WebLite
 
-**A small browser extension that makes heavy pages lighter without turning them into broken pages.**
+**A lightweight browser extension for pages that load more than you actually need.**
 
-WebLite started as a simple idea for the Beginner's Paradise / FirstCommit hackathon: a lot of websites load videos, custom fonts, embeds, motion and other optional things even when I only want to read or use the page.
+WebLite reduces optional page weight — things like heavy media, embeds, web fonts and motion — while trying to keep the site usable.
 
-The first version was too aggressive. It could save resources, but it also made some websites look bad. So the project slowly became less about "block everything" and more about **giving the user control**.
+The project started from a simple annoyance: sometimes I only want the useful part of a page, but the browser still loads a lot of extra stuff around it. I did not want to make another "block everything" extension, so WebLite is built around different strength levels and user control.
 
-## What WebLite does
+## What it does
 
 WebLite has four modes:
 
-- **Balanced** — reduces optional page weight while trying to keep the site looking normal.
-- **Saver** — stronger blocking for media, fonts, embeds and motion.
-- **Ultra** — the strictest mode for pages where visuals are not important.
-- **Custom** — lets you decide what WebLite should reduce.
+- **Balanced** — keeps normal browsing comfortable while reducing some optional weight
+- **Saver** — stronger reduction for media, fonts, embeds and motion
+- **Ultra** — the strictest mode for pages where visuals are not important
+- **Custom** — lets you choose exactly what WebLite should reduce
 
 The popup also shows browser-observed page activity such as:
 
@@ -24,60 +24,56 @@ The popup also shows browser-observed page activity such as:
 - cookie count and cookie changes
 - measured savings compared with a normal-page baseline
 
-If WebLite blocks something you actually need, it can show a small **Load once** control for that image, video or embed instead of making you disable the extension completely.
+If WebLite blocks something you actually want, images, videos and embeds can be loaded **once** without turning the extension off completely.
 
-## The part that took the most fixing
+## Why it is not just an image blocker
 
-The easiest version of a "lite mode" is also the worst one: hide images, pause videos, replace every font and stop animation.
+The simple version was easy: hide images, pause videos, replace fonts and stop animations.
 
-That works until you try real websites.
+It also broke real websites.
 
-One early build forced system fonts too aggressively and broke text layout on Apple's website. Some videos still played because websites were starting them with JavaScript. Some scroll animations were not normal CSS animations at all.
+One early build forced system fonts too aggressively and damaged text layout on Apple's website. Some videos kept playing because the page restarted them with JavaScript. Some scroll effects were not normal CSS animations at all.
 
-Those problems changed the project.
-
-WebLite now uses a mix of network rules, page-side guards and conservative visual overrides. It also has different strength levels because one rule set does not fit every website.
+That pushed WebLite toward a mix of network rules, page-side guards and more conservative visual changes.
 
 ## Browser builds
 
-The current project has separate builds for:
+WebLite currently has separate builds for:
 
 - Chrome
 - Microsoft Edge
 - Brave
 - Firefox
 
-The code is mostly shared, but the packages stay separate because browser extension manifests and background behavior are not completely identical.
+The source is mostly shared, but the browser packages stay separate because extension manifests and background behavior are not identical everywhere.
 
-When the source folders are uploaded, they will live here:
+Current folders:
 
 ```text
 browser-builds/
-├── chrome/
-├── edge/
-├── brave/
-└── firefox/
+├── WebLite-Chrome/
+├── WebLite-Edge/
+├── WebLite-Brave/
+└── WebLite-Firefox/
 ```
 
 See [browser-builds/README.md](browser-builds/README.md) for local install steps.
 
-## Quick test for judges
+## Try it
 
-If you are reviewing WebLite, please try it on **https://play.arc.gg/**.
+One of the main sites I used while testing WebLite is **https://play.arc.gg/**.
 
-That is one of the main websites I used while testing the project, especially for checking media, page activity and the difference between normal browsing and WebLite modes.
-
-A simple test:
+If you are testing the project, a useful flow is:
 
 1. Open the site normally.
 2. Open WebLite and capture the normal-page baseline.
 3. Turn on **Balanced** or **Saver**.
 4. Let the page reload.
 5. Watch the live request / transfer / resource numbers.
-6. Try a blocked image, video or embed with **Load once**.
-7. Restore normal mode and compare the page again.
+6. Try **Load once** on a blocked image, video or embed.
+7. Restore normal mode and compare again.
 
-I also tested on other types of websites because no single site represents the whole web.
+I also test on other kinds of sites because one website cannot represent the whole web.
 
 ## How the measurement works
 
@@ -85,11 +81,7 @@ WebLite is **not** an ISP data meter.
 
 It takes a normal-page baseline, enables the selected WebLite rules, reloads the page, and compares what the browser can observe afterwards.
 
-That means the numbers are useful for comparison, but not every byte can be measured perfectly. Cached resources and some cross-origin resources can be reported differently by browser APIs.
-
-That is why the interface says things like **measured saved** and **browser-observed data** instead of pretending the value is exact.
-
-A simplified flow:
+Cached resources and some cross-origin resources are not always reported perfectly by browser APIs, so the interface uses wording such as **measured saved** and **browser-observed data** instead of pretending every number is exact.
 
 ```text
 normal page
@@ -111,33 +103,31 @@ There is no WebLite account system and no WebLite server.
 
 Cookie telemetry is used for counts/activity only. WebLite does not display or upload cookie values.
 
-More detail is in [PRIVACY.md](PRIVACY.md).
+More detail: [PRIVACY.md](PRIVACY.md)
 
-## Development notes
+## Notes from development
 
-I kept short notes from the build instead of writing a perfect story after everything was finished:
+I kept a few short notes from the project:
 
 - [What I learned](docs/learning-log.md)
 - [How it works](docs/architecture.md)
 - [Testing notes](docs/testing-notes.md)
-- [Hackathon notes](docs/hackathon-notes.md)
+- [Project notes](docs/project-notes.md)
 
 ## Current limitations
 
-WebLite still has some limits:
-
 - browser-protected pages cannot be modified by normal extensions
-- some websites use unusual canvas / media systems that need stronger modes
+- some sites use unusual canvas / media systems that need stronger modes
 - exact network byte counts are not exposed perfectly by browser APIs
-- aggressive blocking can still affect sites that depend on third-party embeds
+- aggressive blocking can affect sites that depend heavily on third-party embeds
 
-That is also why WebLite has modes and one-time exceptions instead of one universal "block everything" switch.
+That is why WebLite has modes and one-time exceptions instead of one universal switch.
 
-## Built for FirstCommit
+## Project origin
 
-WebLite was started during the Beginner's Paradise / FirstCommit hackathon.
+WebLite is an ongoing personal project. Its first public version was also developed and entered during the **Beginner's Paradise / FirstCommit** hackathon, which gave me a good reason to turn the early prototype into something more complete.
 
-AI tools were used for brainstorming, debugging and code assistance. I tested the extension manually, changed parts that failed on real sites, and documented the technical decisions and limitations here.
+AI tools were used for brainstorming, debugging and code assistance during development. I manually tested the extension, changed approaches when they failed on real sites, and documented those trade-offs in this repository.
 
 ---
 
