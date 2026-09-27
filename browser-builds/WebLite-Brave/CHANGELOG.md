@@ -1,3 +1,10 @@
+# WebLite 1.4.0
+
+- Added **Study mode** for students using limited data, hotspots, slow home internet or crowded school Wi-Fi.
+- Study mode keeps text and same-site diagrams while reducing cross-site images, media, web fonts, third-party embeds and motion.
+- Kept **Load once** so blocked lesson resources can be restored individually.
+- Added Study mode to settings and the tutorial.
+
 # WebLite 1.3.0
 
 - Added visible **Load once** placeholders for blocked images, videos, and embeds.
