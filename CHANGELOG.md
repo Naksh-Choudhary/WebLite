@@ -1,6 +1,6 @@
 # Changelog
 
-This is a short record of the versions built during the hackathon.
+A short record of how WebLite changed from the first prototype into the current multi-browser build.
 
 ## v0.1
 
@@ -12,11 +12,11 @@ The first working prototype.
 - basic request / transfer comparison
 - simple dark popup
 
-The important lesson from this version was that hiding something after it loads does not really save the network request. The extension needed to block resources before the page finished loading.
+The main lesson from this version was that hiding something after it loads does not really save the network request. The extension needed to block resources before the page finished loading.
 
 ## v1.0
 
-The project became a real product instead of a proof of concept.
+The project moved beyond the first proof of concept.
 
 - Balanced, Saver, Ultra and Custom modes
 - settings page
@@ -63,4 +63,4 @@ Focused on usability after blocking.
 - browser-specific packages for Chrome, Edge, Brave and Firefox
 - updated tutorial and compatibility notes
 
-This is the version being prepared for the FirstCommit submission.
+This is the current working version in the repository.
