@@ -6,6 +6,8 @@ WebLite is a lightweight browsing extension that reduces optional page resources
 
 ## Main features
 
+- **AI Smart Filter** with reversible ad/promo cleanup and conversational restore controls
+
 - Balanced, **Study**, Saver, Ultra and Custom modes
 - **Study mode** keeps text and same-site diagrams while trimming cross-site images, media, web fonts, third-party embeds and distracting motion
 - request-level blocking for selected resources
