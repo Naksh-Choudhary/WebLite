@@ -36,6 +36,12 @@ That telemetry is for **counting / activity**, not for displaying the contents o
 
 Mode choices and extension preferences are stored with the browser extension storage APIs so WebLite can remember how the user wants it to behave.
 
+## AI Smart Filter
+
+Smart Filter does not permanently delete page elements. It temporarily hides selected DOM elements and keeps enough local state to restore them during the page session.
+
+High-confidence ad/promo filtering can run with local heuristics. If the browser exposes a built-in language model, Page Coach may send a small description of candidate page elements to that browser-provided model for classification. WebLite does not operate its own AI server.
+
 ## Page Coach
 
 Page Coach has no WebLite AI server. When the browser exposes a built-in language model, WebLite can use that browser-provided model for the text the user asks it to analyze. If no built-in model is available, Page Coach falls back to local text matching and resource heuristics.
