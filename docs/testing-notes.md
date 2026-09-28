@@ -63,6 +63,22 @@ A useful student test is to open a study article or learning page, enable Study 
 - Load once can restore an individual item
 - the page can still be returned to normal
 
+## AI Smart Filter
+
+- Study mode automatically runs the conservative local Smart Filter
+- obvious/high-confidence ad or promo containers can be hidden
+- useful main/article content should remain
+- login, payment, captcha, consent and form surfaces should remain
+- open **AI Smart Filter / Page Coach**
+- check the “Hidden by WebLite” list
+- restore one item
+- use **Undo last hide**
+- use **Restore everything**
+- try chat commands such as “what did you hide?” and “restore item 1”
+- if browser AI is unavailable, the page should still work in Local precision mode
+
+A wrong hide is considered more serious than leaving an uncertain ad visible, so the classifier is intentionally conservative.
+
 ## Live telemetry
 
 Check that values update instead of staying as dashes:
