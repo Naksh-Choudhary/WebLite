@@ -13,7 +13,7 @@ browser-builds/
 └── WebLite-Firefox/
 ```
 
-Each browser folder directly contains its own `manifest.json`. WebLite 1.5 includes **Study mode** in all four builds.
+Each browser folder directly contains its own `manifest.json`. WebLite 1.6 includes **Study mode** in all four builds.
 
 ## Important: this folder is not what Chrome asks you to select
 
@@ -96,7 +96,7 @@ WebLite-main/browser-builds/WebLite-Firefox
 
 ## Confirm the correct build
 
-The current build is **WebLite 1.5.0**.
+The current build is **WebLite 1.6.0**.
 
 When you open the extension, the modes should be:
 
