@@ -6,6 +6,14 @@ WebLite reduces optional page weight — things like heavy media, embeds, web fo
 
 The project started from a simple annoyance: sometimes I only want the useful part of a page, but the browser still loads a lot of extra stuff around it. I did not want to make another "block everything" extension, so WebLite is built around different strength levels and user control.
 
+## Current release
+
+**WebLite 1.6.0** is the final CSC Back-to-School submission build.
+
+This release brings together the parts we kept improving during testing: Study Mode, safer motion/font handling, better on-demand video playback, live page telemetry, and the new **reversible AI Smart Filter**. The Smart Filter can hide high-confidence ad/promo clutter, keep a visible record of what it changed, and restore individual items if the user says WebLite removed something useful.
+
+For the hackathon, 1.6.0 is the feature-frozen submission version. WebLite itself remains an ongoing project after the event.
+
 ## Download & install
 
 **New to browser extensions? Start here: [Download & Install WebLite](DOWNLOAD-AND-INSTALL.md).**
