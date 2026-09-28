@@ -31,7 +31,7 @@ function setGuardState(config = {}) {
   root.dataset.webliteMedia = (config.media || config.pauseAutoplay) ? "1" : "0";
   root.dataset.webliteFonts = config.fonts ? "1" : "0";
   root.dataset.webliteMotion = resolvedMotionLevel(config);
-  root.dataset.webliteFocusShield = config.focusShield ? "1" : "0";
+  root.dataset.webliteFocusShield = (config.smartFilter || config.focusShield) ? "1" : "0";
 }
 function clearGuardState() {
   const root = ensureRoot(); if (!root) return;
@@ -223,41 +223,218 @@ function clearFontFallbacks() {
 }
 
 const FOCUS_HIDDEN = "data-weblite-focus-hidden";
+const SMART_ID = "data-weblite-smart-id";
+let smartSeq = 0;
+const smartHistory = [];
+
 function safeToHide(el) {
   if (!(el instanceof HTMLElement)) return false;
+  if ([document.documentElement, document.body].includes(el)) return false;
   const meta = `${el.id || ""} ${typeof el.className === "string" ? el.className : ""} ${el.getAttribute("aria-label") || ""} ${el.getAttribute("title") || ""}`.toLowerCase();
-  if (/(cookie|consent|login|sign[- ]?in|checkout|payment|captcha|verification|verify|cart)/i.test(meta)) return false;
+  if (/(cookie|consent|login|log-in|sign[- ]?in|checkout|payment|captcha|verification|verify|cart|password|account|subscribe-form)/i.test(meta)) return false;
+  if (el.matches("form,input,textarea,select,button,[contenteditable='true']")) return false;
   return true;
 }
-function looksLikeAd(el) {
-  if (!safeToHide(el)) return false;
-  try {
-    if (el.matches('ins.adsbygoogle,[data-ad],[data-ad-slot],[data-google-query-id],[aria-label*="advertisement" i],[id^="ad-" i],[id*="-ad-" i],[class~="ad"],[class*=" ad-" i],[class*="advert" i],[id*="advert" i],[class*="sponsor" i],[id*="sponsor" i],iframe[src*="doubleclick" i],iframe[src*="googlesyndication" i]')) return true;
-    const cs = getComputedStyle(el);
-    const rect = el.getBoundingClientRect();
-    const z = Number.parseInt(cs.zIndex, 10) || 0;
-    const text = `${el.getAttribute("aria-label") || ""} ${el.textContent || ""}`.slice(0,220).toLowerCase();
-    const popupish = ["fixed","sticky"].includes(cs.position) && z >= 20 && rect.width > 80 && rect.height > 40 && rect.width * rect.height < innerWidth * innerHeight * .55;
-    return popupish && /\b(ad|advertisement|sponsored|promoted)\b/i.test(text);
-  } catch { return false; }
+
+function smartElementId(el) {
+  if (!(el instanceof HTMLElement)) return "";
+  if (!el.dataset.webliteSmartId) el.dataset.webliteSmartId = `smart-${++smartSeq}`;
+  return el.dataset.webliteSmartId;
 }
-function hideFocusItem(el) {
-  if (!(el instanceof HTMLElement) || el.hasAttribute(FOCUS_HIDDEN)) return;
-  el.setAttribute(FOCUS_HIDDEN, el.style.display || "__empty__");
-  el.style.setProperty("display", "none", "important");
+
+function compactText(el, limit = 260) {
+  return String(el?.innerText || el?.textContent || "").replace(/\s+/g, " ").trim().slice(0, limit);
 }
-function scanFocusShield(root = document) {
-  if (!activeConfig?.focusShield) return;
-  const selector = 'ins.adsbygoogle,[data-ad],[data-ad-slot],[data-google-query-id],[aria-label*="advertisement" i],[id^="ad-" i],[id*="-ad-" i],[class~="ad"],[class*=" ad-" i],[class*="advert" i],[id*="advert" i],[class*="sponsor" i],[id*="sponsor" i],iframe[src*="doubleclick" i],iframe[src*="googlesyndication" i]';
-  if (root instanceof Element && looksLikeAd(root)) hideFocusItem(root);
-  root.querySelectorAll?.(selector).forEach(el => { if (looksLikeAd(el)) hideFocusItem(el); });
+
+function smartMeta(el) {
+  if (!(el instanceof HTMLElement)) return null;
+  let rect, cs;
+  try { rect = el.getBoundingClientRect(); cs = getComputedStyle(el); } catch { return null; }
+  if (!rect || rect.width < 24 || rect.height < 18) return null;
+
+  const id = smartElementId(el);
+  const classText = typeof el.className === "string" ? el.className : "";
+  const aria = el.getAttribute("aria-label") || "";
+  const title = el.getAttribute("title") || "";
+  const text = compactText(el);
+  const src = el.getAttribute("src") || el.querySelector?.("img[src],iframe[src],video[src]")?.getAttribute("src") || "";
+  const href = el.getAttribute("href") || el.querySelector?.("a[href]")?.getAttribute("href") || "";
+  const marker = `${el.id || ""} ${classText} ${aria} ${title} ${text.slice(0, 120)} ${src}`.toLowerCase();
+
+  const explicitAd = el.matches?.('ins.adsbygoogle,[data-ad],[data-ad-slot],[data-google-query-id],[aria-label*="advertisement" i],[id^="ad-" i],[id*="-ad-" i],[class~="ad"],[class*=" ad-" i],[class*="advert" i],[id*="advert" i],iframe[src*="doubleclick" i],iframe[src*="googlesyndication" i]') || /\b(advertisement|sponsored|promoted)\b/i.test(marker);
+  const promoMarker = /\b(promo|promotion|sponsor|offer|deal|banner-ad|ad-slot|advert)\b/i.test(marker);
+  const popupish = ["fixed","sticky"].includes(cs.position) && (parseInt(cs.zIndex,10)||0) >= 15 && rect.width > 90 && rect.height > 45 && rect.width * rect.height < innerWidth * innerHeight * .65;
+  const inMain = Boolean(el.closest("main,article,[role='main']"));
+  const hasImportantUi = Boolean(el.querySelector("form,input,textarea,select,[role='navigation'],nav,[aria-label*='login' i],[aria-label*='sign in' i]"));
+  const hasHeading = Boolean(el.querySelector("h1,h2"));
+  const textHeavy = text.length > 420;
+  const crossFrame = el instanceof HTMLIFrameElement && isCrossSite(el.src || "");
+  const imageLink = el.matches("a") && Boolean(el.querySelector("img")) && isCrossSite(href || "");
+
+  let adScore = 0;
+  const reasons = [];
+  if (explicitAd) { adScore += .84; reasons.push("explicit ad/sponsored marker"); }
+  if (promoMarker) { adScore += .28; reasons.push("promotional marker"); }
+  if (popupish) { adScore += .18; reasons.push("floating overlay"); }
+  if (crossFrame) { adScore += .12; reasons.push("cross-site frame"); }
+  if (imageLink && text.length < 120) { adScore += .08; reasons.push("small cross-site image link"); }
+  if (inMain) { adScore -= .30; reasons.push("inside main content"); }
+  if (textHeavy) { adScore -= .26; reasons.push("text-heavy content"); }
+  if (hasHeading) adScore -= .12;
+  if (hasImportantUi) adScore -= .50;
+  if (!safeToHide(el)) adScore = 0;
+  adScore = Math.max(0, Math.min(1, adScore));
+
+  return {
+    id,
+    tag: el.tagName.toLowerCase(),
+    role: el.getAttribute("role") || "",
+    text,
+    aria,
+    title,
+    src: String(src).slice(0, 500),
+    href: String(href).slice(0, 500),
+    classHint: classText.slice(0, 180),
+    idHint: (el.id || "").slice(0, 100),
+    position: cs.position,
+    width: Math.round(rect.width),
+    height: Math.round(rect.height),
+    inMain,
+    adScore: Number(adScore.toFixed(2)),
+    reason: reasons.join(", ") || "no strong ad signal"
+  };
 }
-function clearFocusShield() {
-  document.querySelectorAll?.(`[${FOCUS_HIDDEN}]`).forEach(el => {
-    const prev = el.getAttribute(FOCUS_HIDDEN);
-    if (prev === "__empty__") el.style.removeProperty("display"); else el.style.display = prev || "";
-    el.removeAttribute(FOCUS_HIDDEN);
+
+function smartCandidates(root = document) {
+  const selector = [
+    "ins.adsbygoogle","[data-ad]","[data-ad-slot]","[data-google-query-id]",
+    '[aria-label*="advertisement" i]','[class*="advert" i]','[id*="advert" i]',
+    '[class*="sponsor" i]','[id*="sponsor" i]','[class*="promo" i]','[id*="promo" i]',
+    '[class*="banner" i]','[id*="banner" i]','[class*="popup" i]','[id*="popup" i]',
+    '[class*="modal" i]','[role="dialog"]',"aside","iframe"
+  ].join(",");
+  const nodes = [];
+  if (root instanceof HTMLElement && root.matches?.(selector)) nodes.push(root);
+  root.querySelectorAll?.(selector).forEach(el => nodes.push(el));
+
+  // Also inspect visible fixed/sticky containers without scanning every node repeatedly.
+  root.querySelectorAll?.("body > div, body > section").forEach(el => {
+    try {
+      const cs = getComputedStyle(el);
+      if (["fixed","sticky"].includes(cs.position)) nodes.push(el);
+    } catch {}
   });
+
+  const seen = new Set();
+  const out = [];
+  for (const el of nodes) {
+    if (!(el instanceof HTMLElement) || seen.has(el)) continue;
+    seen.add(el);
+    const meta = smartMeta(el);
+    if (!meta) continue;
+    out.push(meta);
+    if (out.length >= 60) break;
+  }
+  return out;
+}
+
+function smartElementById(id) {
+  if (!id) return null;
+  try { return document.querySelector(`[${SMART_ID}="${CSS.escape(String(id))}"]`); } catch { return null; }
+}
+
+function hideSmartItem(el, info = {}) {
+  if (!(el instanceof HTMLElement) || !safeToHide(el) || el.hasAttribute(FOCUS_HIDDEN)) return false;
+  const id = smartElementId(el);
+  el.setAttribute(FOCUS_HIDDEN, el.style.display || "__empty__");
+  el.dataset.webliteSmartReason = String(info.reason || "likely ad/promo").slice(0, 180);
+  el.dataset.webliteSmartConfidence = String(Number(info.confidence ?? info.adScore ?? 0).toFixed(2));
+  el.style.setProperty("display", "none", "important");
+  smartHistory.push(id);
+  if (smartHistory.length > 100) smartHistory.shift();
+  return true;
+}
+
+function restoreSmartItem(id) {
+  const el = smartElementById(id);
+  if (!(el instanceof HTMLElement) || !el.hasAttribute(FOCUS_HIDDEN)) return false;
+  const prev = el.getAttribute(FOCUS_HIDDEN);
+  if (prev === "__empty__") el.style.removeProperty("display"); else el.style.display = prev || "";
+  el.removeAttribute(FOCUS_HIDDEN);
+  delete el.dataset.webliteSmartReason;
+  delete el.dataset.webliteSmartConfidence;
+  return true;
+}
+
+function hiddenSmartItems() {
+  return [...document.querySelectorAll?.(`[${FOCUS_HIDDEN}]`) || []].map((el, index) => {
+    const meta = smartMeta(el) || {};
+    return {
+      index: index + 1,
+      id: smartElementId(el),
+      text: compactText(el, 120) || meta.aria || meta.title || meta.tag || "hidden element",
+      reason: el.dataset.webliteSmartReason || meta.reason || "filtered",
+      confidence: Number(el.dataset.webliteSmartConfidence || meta.adScore || 0)
+    };
+  });
+}
+
+function runLocalSmartFilter(root = document) {
+  if (!(activeConfig?.smartFilter || activeConfig?.focusShield)) return { hidden: 0, candidates: [] };
+  const candidates = smartCandidates(root);
+  let hidden = 0;
+  for (const meta of candidates) {
+    // Local auto-hiding is deliberately strict. AI may review lower-confidence items later.
+    if (meta.adScore >= .90) {
+      const el = smartElementById(meta.id);
+      if (hideSmartItem(el, { reason: meta.reason, confidence: meta.adScore })) hidden++;
+    }
+  }
+  return { hidden, candidates };
+}
+
+function scanFocusShield(root = document) {
+  runLocalSmartFilter(root);
+}
+
+function clearFocusShield() {
+  [...document.querySelectorAll?.(`[${FOCUS_HIDDEN}]`) || []].forEach(el => restoreSmartItem(smartElementId(el)));
+}
+
+function applySmartDecisions(decisions = []) {
+  let hidden = 0, restored = 0;
+  for (const decision of Array.isArray(decisions) ? decisions : []) {
+    const el = smartElementById(decision?.id);
+    if (!(el instanceof HTMLElement)) continue;
+    const confidence = Number(decision.confidence || 0);
+    if (decision.action === "hide" && confidence >= .90) {
+      const meta = smartMeta(el);
+      // AI still cannot override the hard safety checks.
+      if (meta && safeToHide(el) && !meta.inMain && hideSmartItem(el, { reason: decision.reason || "AI classified as ad/promo", confidence })) hidden++;
+    } else if (decision.action === "keep" && el.hasAttribute(FOCUS_HIDDEN)) {
+      if (restoreSmartItem(decision.id)) restored++;
+    }
+  }
+  return { hidden, restored, state: hiddenSmartItems() };
+}
+
+function restoreSmart(payload = {}) {
+  if (payload.all) {
+    let restored = 0;
+    for (const item of hiddenSmartItems()) if (restoreSmartItem(item.id)) restored++;
+    return { restored, state: hiddenSmartItems() };
+  }
+  if (payload.last) {
+    while (smartHistory.length) {
+      const id = smartHistory.pop();
+      if (restoreSmartItem(id)) return { restored: 1, id, state: hiddenSmartItems() };
+    }
+    return { restored: 0, state: hiddenSmartItems() };
+  }
+  const ids = Array.isArray(payload.ids) ? payload.ids : payload.id ? [payload.id] : [];
+  let restored = 0;
+  ids.forEach(id => { if (restoreSmartItem(id)) restored++; });
+  return { restored, state: hiddenSmartItems() };
 }
 
 function startEnforcement() {
@@ -383,6 +560,23 @@ function reportStatsSoon(delay = 900) {
 
 EXT.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "GET_PAGE_STATS") { sendResponse(getPageStats()); return; }
+  if (message.type === "GET_SMART_STATE") {
+    sendResponse({ hidden: hiddenSmartItems(), candidates: smartCandidates(document) });
+    return;
+  }
+  if (message.type === "RUN_SMART_FILTER") {
+    const result = runLocalSmartFilter(document);
+    sendResponse({ ok:true, ...result, state:hiddenSmartItems() });
+    return;
+  }
+  if (message.type === "APPLY_SMART_DECISIONS") {
+    sendResponse({ ok:true, ...applySmartDecisions(message.decisions || []) });
+    return;
+  }
+  if (message.type === "RESTORE_SMART") {
+    sendResponse({ ok:true, ...restoreSmart(message || {}) });
+    return;
+  }
   if (message.type === "GET_PAGE_CONTEXT") {
     const main = document.querySelector("main,article,[role='main']") || document.body;
     const parts = [];
