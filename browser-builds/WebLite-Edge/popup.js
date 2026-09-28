@@ -2,10 +2,10 @@ const EXT = globalThis.browser || globalThis.chrome;
 const $ = (id) => document.getElementById(id);
 
 const PRESETS = {
-  balanced:{images:"none",media:true,fonts:true,frames:"thirdParty",motionLevel:"reduce",pauseAutoplay:true,focusShield:false},
-  study:{images:"thirdParty",media:true,fonts:false,frames:"thirdParty",motionLevel:"reduce",pauseAutoplay:true,focusShield:true},
-  saver:{images:"thirdParty",media:true,fonts:true,frames:"all",motionLevel:"freeze",pauseAutoplay:true,focusShield:true},
-  ultra:{images:"all",media:true,fonts:true,frames:"all",motionLevel:"freeze",pauseAutoplay:true,focusShield:true}
+  balanced:{images:"none",media:true,fonts:true,frames:"thirdParty",motionLevel:"reduce",pauseAutoplay:true,focusShield:false,smartFilter:false},
+  study:{images:"thirdParty",media:true,fonts:false,frames:"thirdParty",motionLevel:"reduce",pauseAutoplay:true,focusShield:true,smartFilter:true},
+  saver:{images:"thirdParty",media:true,fonts:true,frames:"all",motionLevel:"freeze",pauseAutoplay:true,focusShield:true,smartFilter:true},
+  ultra:{images:"all",media:true,fonts:true,frames:"all",motionLevel:"freeze",pauseAutoplay:true,focusShield:true,smartFilter:true}
 };
 
 const MODE_HINTS = {
@@ -62,7 +62,8 @@ function currentConfig(){
     frames:framesSelect.value,
     motionLevel:motionSelect.value,
     pauseAutoplay:autoplayToggle.checked,
-    focusShield:focusShieldToggle.checked
+    focusShield:focusShieldToggle.checked,
+    smartFilter:focusShieldToggle.checked
   };
 }
 
@@ -87,7 +88,7 @@ function renderPresetSummary(config){
   if(config.images==="all")items.push("Images");
   if(config.motionLevel==="reduce")items.push("Less motion");
   if(config.motionLevel==="freeze")items.push("Motion Shield");
-  if(config.focusShield)items.push("Focus Shield");
+  if(config.smartFilter||config.focusShield)items.push("AI Smart Filter");
   presetSummary.innerHTML=(items.length?items:["Core page only"]).map(x=>`<span class="pill on">${x}</span>`).join("");
 }
 

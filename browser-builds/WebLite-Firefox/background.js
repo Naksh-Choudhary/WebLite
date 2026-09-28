@@ -14,7 +14,8 @@ const DEFAULT_SETTINGS = {
     frames: "thirdParty",
     motionLevel: "reduce",
     pauseAutoplay: true,
-    focusShield: false
+    focusShield: false,
+    smartFilter: false
   },
   siteModes: {}
 };
@@ -34,7 +35,8 @@ const PRESETS = {
     frames: "thirdParty",
     motionLevel: "reduce",
     pauseAutoplay: true,
-    focusShield: false
+    focusShield: false,
+    smartFilter: false
   },
   study: {
     images: "thirdParty",
@@ -43,7 +45,8 @@ const PRESETS = {
     frames: "thirdParty",
     motionLevel: "reduce",
     pauseAutoplay: true,
-    focusShield: true
+    focusShield: true,
+    smartFilter: true
   },
   saver: {
     images: "thirdParty",
@@ -52,7 +55,8 @@ const PRESETS = {
     frames: "all",
     motionLevel: "freeze",
     pauseAutoplay: true,
-    focusShield: true
+    focusShield: true,
+    smartFilter: true
   },
   ultra: {
     images: "all",
@@ -61,7 +65,8 @@ const PRESETS = {
     frames: "all",
     motionLevel: "freeze",
     pauseAutoplay: true,
-    focusShield: true
+    focusShield: true,
+    smartFilter: true
   }
 };
 

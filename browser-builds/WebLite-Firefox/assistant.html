@@ -3,16 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WebLite Page Coach</title>
+  <title>WebLite AI Smart Filter</title>
   <link rel="stylesheet" href="assistant.css" />
 </head>
 <body>
   <main class="coach-shell">
     <header class="coach-header">
-      <div class="brand"><img src="icons/icon48.png" alt="WebLite logo" /><div><span>WEBLITE 1.5</span><h1>Page Coach <small>BETA</small></h1></div></div>
+      <div class="brand">
+        <img src="icons/icon48.png" alt="WebLite logo" />
+        <div><span>WEBLITE 1.6</span><h1>AI Smart Filter <small>BETA</small></h1></div>
+      </div>
       <button id="refreshPage">Re-analyze</button>
     </header>
-
     <section class="page-card">
       <p class="eyebrow">CURRENT PAGE</p>
       <h2 id="pageTitle">Reading page…</h2>
@@ -23,22 +25,35 @@
         <div><b id="observedSize">–</b><span>observed data</span></div>
       </div>
     </section>
-
     <section class="analysis-card">
-      <div class="analysis-head"><div><p class="eyebrow">QUICK ANALYSIS</p><h2 id="recommendation">Analyzing…</h2></div><span id="aiStatus" class="status">Checking AI…</span></div>
-      <p id="analysisText" class="muted">WebLite is reading the visible page text and resource activity.</p>
+      <div class="analysis-head">
+        <div><p class="eyebrow">SMART CLEAN</p><h2 id="recommendation">Analyzing…</h2></div>
+        <span id="aiStatus" class="status">Checking AI…</span>
+      </div>
+      <p id="analysisText" class="muted">WebLite is checking visible page structure, likely ad markers, overlays and resource activity.</p>
+      <div class="action-row">
+        <button id="cleanPage" class="primary">Smart clean page</button>
+        <button id="undoLast" class="secondary">Undo last hide</button>
+        <button id="restoreAll" class="secondary">Restore everything</button>
+      </div>
     </section>
-
+    <section class="hidden-card">
+      <div class="analysis-head">
+        <div><p class="eyebrow">REVERSIBLE FILTER</p><h2>Hidden by WebLite</h2></div>
+        <span id="hiddenCount" class="status">0 hidden</span>
+      </div>
+      <div id="hiddenList" class="hidden-list"><p class="muted">Nothing is hidden right now.</p></div>
+    </section>
     <section class="chat-card">
-      <p class="eyebrow">ASK ABOUT THIS PAGE</p>
+      <p class="eyebrow">TALK TO WEBLITE</p>
       <div id="conversation" class="conversation">
-        <div class="bubble coach">Ask for a short explanation, key points, or whether this page looks heavy for a study session.</div>
+        <div class="bubble coach">I can explain this page, tell you what I hid, undo a mistake, or restore a specific item. Try “what did you hide?” or “restore item 2”.</div>
       </div>
       <form id="askForm">
-        <textarea id="question" rows="3" maxlength="700" placeholder="Example: Explain this page in simple words"></textarea>
-        <button id="askButton" type="submit">Ask Page Coach</button>
+        <textarea id="question" rows="3" maxlength="700" placeholder="Example: You removed a useful image — bring it back"></textarea>
+        <button id="askButton" type="submit">Ask WebLite</button>
       </form>
-      <p class="privacy-note">WebLite has no AI server. If your browser offers a built-in language model, Page Coach can use it. Otherwise it uses local text matching and page heuristics.</p>
+      <p class="privacy-note">WebLite never permanently deletes page elements. Smart Filter hides them reversibly. If your browser has a built-in language model, WebLite can use it locally; otherwise it uses conservative on-device heuristics.</p>
     </section>
   </main>
   <script src="assistant.js"></script>
