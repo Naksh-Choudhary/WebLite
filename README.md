@@ -25,7 +25,19 @@ Quick version:
 
 If you are already inside a subfolder on GitHub and cannot see the green **Code** button, return to the main **WebLite** repository page first.
 
-The full guide includes exact browser-by-browser steps, the folder you must select, common errors, and how to confirm you loaded WebLite 1.4.0.
+The full guide includes exact browser-by-browser steps, the folder you must select, common errors, and how to confirm you loaded WebLite 1.5.0.
+
+## WebLite 1.5
+
+The latest build focuses on keeping real websites usable:
+
+- safer motion handling so sites such as Apple.com do not freeze sliders in Balanced/Study
+- no forced visual font replacement by default
+- a redesigned on-page video placeholder with **Play video**
+- a short media pass so user-requested video can actually start
+- **Focus Shield** in Study/Saver/Ultra for recognized ad and promo clutter
+- **Page Coach (beta)**, which can use a browser-provided language model when available and otherwise falls back to local page analysis
+- a new extension logo across the browser builds
 
 ## What it does
 
