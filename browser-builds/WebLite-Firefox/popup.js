@@ -2,15 +2,15 @@ const EXT = globalThis.browser || globalThis.chrome;
 const $ = (id) => document.getElementById(id);
 
 const PRESETS = {
-  balanced:{images:"none",media:true,fonts:true,frames:"thirdParty",motionLevel:"reduce",pauseAutoplay:true},
-  study:{images:"thirdParty",media:true,fonts:true,frames:"thirdParty",motionLevel:"reduce",pauseAutoplay:true},
-  saver:{images:"thirdParty",media:true,fonts:true,frames:"all",motionLevel:"freeze",pauseAutoplay:true},
-  ultra:{images:"all",media:true,fonts:true,frames:"all",motionLevel:"freeze",pauseAutoplay:true}
+  balanced:{images:"none",media:true,fonts:true,frames:"thirdParty",motionLevel:"reduce",pauseAutoplay:true,focusShield:false},
+  study:{images:"thirdParty",media:true,fonts:false,frames:"thirdParty",motionLevel:"reduce",pauseAutoplay:true,focusShield:true},
+  saver:{images:"thirdParty",media:true,fonts:true,frames:"all",motionLevel:"freeze",pauseAutoplay:true,focusShield:true},
+  ultra:{images:"all",media:true,fonts:true,frames:"all",motionLevel:"freeze",pauseAutoplay:true,focusShield:true}
 };
 
 const MODE_HINTS = {
   balanced:"Keeps images and core interactions, but trims heavy extras.",
-  study:"For study sessions: keeps text and same-site diagrams, trims cross-site images, autoplay media, web fonts and embeds.",
+  study:"For study sessions: keeps typography safer, trims cross-site images/media, hides recognized ad clutter and reduces motion.",
   saver:"Stronger media, embed and Motion Shield controls for hotspot use.",
   ultra:"Maximum saving: blocks images and freezes scripted motion too.",
   custom:"Choose exactly what WebLite should keep, reduce or freeze."
@@ -26,7 +26,7 @@ const ACCENTS = {
 let settings, activeTab, tabState, busy = false, liveTimer = null, scriptEnsured = false;
 
 const toggle=$("liteToggle"), statusLabel=$("statusLabel"), hostLabel=$("hostLabel"), modeHint=$("modeHint"), presetSummary=$("presetSummary"), customDetails=$("customDetails");
-const imagesSelect=$("imagesSelect"), mediaToggle=$("mediaToggle"), fontsToggle=$("fontsToggle"), framesSelect=$("framesSelect"), motionSelect=$("motionSelect"), autoplayToggle=$("autoplayToggle"), rememberMode=$("rememberMode"), restoreButton=$("restoreButton"), errorBox=$("errorBox");
+const imagesSelect=$("imagesSelect"), mediaToggle=$("mediaToggle"), fontsToggle=$("fontsToggle"), framesSelect=$("framesSelect"), motionSelect=$("motionSelect"), autoplayToggle=$("autoplayToggle"), focusShieldToggle=$("focusShieldToggle"), rememberMode=$("rememberMode"), restoreButton=$("restoreButton"), errorBox=$("errorBox");
 
 function formatBytes(bytes){
   const v=Math.max(0,Number(bytes||0));
@@ -61,7 +61,8 @@ function currentConfig(){
     fonts:fontsToggle.checked,
     frames:framesSelect.value,
     motionLevel:motionSelect.value,
-    pauseAutoplay:autoplayToggle.checked
+    pauseAutoplay:autoplayToggle.checked,
+    focusShield:focusShieldToggle.checked
   };
 }
 
@@ -73,6 +74,7 @@ function fillCustomControls(config){
   framesSelect.value=c.frames||"thirdParty";
   motionSelect.value=c.motionLevel||(c.reduceMotion===false?"none":"reduce");
   autoplayToggle.checked=!!c.pauseAutoplay;
+  focusShieldToggle.checked=!!c.focusShield;
 }
 
 function renderPresetSummary(config){
@@ -85,6 +87,7 @@ function renderPresetSummary(config){
   if(config.images==="all")items.push("Images");
   if(config.motionLevel==="reduce")items.push("Less motion");
   if(config.motionLevel==="freeze")items.push("Motion Shield");
+  if(config.focusShield)items.push("Focus Shield");
   presetSummary.innerHTML=(items.length?items:["Core page only"]).map(x=>`<span class="pill on">${x}</span>`).join("");
 }
 
@@ -282,9 +285,10 @@ async function init(){
 toggle.addEventListener("change",()=>setEnabled(toggle.checked));
 restoreButton.addEventListener("click",()=>{if(tabState.enabled)setEnabled(false);});
 document.querySelectorAll(".mode-tab").forEach(b=>b.addEventListener("click",()=>chooseMode(b.dataset.mode)));
-[imagesSelect,mediaToggle,fontsToggle,framesSelect,motionSelect,autoplayToggle].forEach(el=>el.addEventListener("change",onCustomChanged));
+[imagesSelect,mediaToggle,fontsToggle,framesSelect,motionSelect,autoplayToggle,focusShieldToggle].forEach(el=>el.addEventListener("change",onCustomChanged));
 $("tutorialButton").addEventListener("click",async()=>{await EXT.runtime.sendMessage({type:"OPEN_TUTORIAL"});window.close();});
 $("settingsButton").addEventListener("click",async()=>{await EXT.runtime.sendMessage({type:"OPEN_SETTINGS"});window.close();});
+$("pageCoachButton").addEventListener("click",async()=>{await EXT.runtime.sendMessage({type:"OPEN_ASSISTANT"});window.close();});
 rememberMode.addEventListener("change",async()=>{settings.rememberSiteMode=rememberMode.checked;await EXT.runtime.sendMessage({type:"SAVE_SETTINGS",settings:{rememberSiteMode:rememberMode.checked}});});
 window.addEventListener("unload",()=>{if(liveTimer)clearInterval(liveTimer);});
 

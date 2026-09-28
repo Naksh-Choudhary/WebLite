@@ -3,7 +3,7 @@
   window.__weblitePageGuardInstalled = true;
 
   const root = () => document.documentElement;
-  const mediaActive = () => root()?.dataset.webliteMedia === "1";
+  const mediaActive = () => root()?.dataset.webliteMedia === "1" && root()?.dataset.webliteMediaPass !== "1";
   const motionMode = () => root()?.dataset.webliteMotion || "none";
   const mediaAllowed = (el) => el?.dataset?.webliteAllowOnce === "1";
 

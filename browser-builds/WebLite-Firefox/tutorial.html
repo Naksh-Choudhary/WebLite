@@ -8,10 +8,10 @@
 </head>
 <body>
   <main class="tutorial-shell">
-    <nav class="nav"><div class="nav-brand"><div class="mark">W</div><strong>WebLite</strong></div><button id="openSettings">Settings</button></nav>
+    <nav class="nav"><div class="nav-brand"><img class="mark" src="icons/icon48.png" alt="WebLite logo" /><strong>WebLite</strong></div><button id="openSettings">Settings</button></nav>
 
     <section class="hero">
-      <p class="eyebrow">WELCOME TO WEBLITE 1.4</p>
+      <p class="eyebrow">WELCOME TO WEBLITE 1.5</p>
       <h1>Use the web.<br><span>Not all of its weight.</span></h1>
       <p class="lead">WebLite is a one-click low-data layer for modern browsers. It trims optional heavy resources before they download and shows live, local page telemetry while you browse.</p>
       <div class="hero-actions"><button id="closeTab" class="primary">Got it — start browsing</button><span>Quick toggle: <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>L</kbd></span></div>
@@ -20,8 +20,8 @@
     <section class="section">
       <div class="section-title"><p>01</p><h2>Choose the right mode</h2></div>
       <div class="mode-grid">
-        <article><div class="mode-badge">BALANCED</div><h3>Everyday mode</h3><p>Blocks media requests, blocks web-font downloads, uses a safe system-font fallback for simple text, stops autoplay and trims third-party embeds. Images stay available. Smart motion control escalates on animation-heavy pages.</p><strong>Best starting point</strong></article>
-        <article><div class="mode-badge">STUDY</div><h3>Student mode</h3><p>Keeps readable text and same-site diagrams while trimming cross-site images, autoplay media, web fonts, third-party embeds and distracting motion. Anything important can still be loaded once.</p><strong>For study sessions and limited data</strong></article>
+        <article><div class="mode-badge">BALANCED</div><h3>Everyday mode</h3><p>Trims media, web-font downloads and third-party embeds while keeping motion handling conservative so interactive pages stay usable.</p><strong>Best starting point</strong></article>
+        <article><div class="mode-badge">STUDY</div><h3>Student mode</h3><p>Keeps typography and same-site learning content safer, trims cross-site images/media, reduces motion, and uses Focus Shield to hide recognized ad/promo clutter. Videos can still be played on demand.</p><strong>For study sessions and limited data</strong></article>
         <article><div class="mode-badge">SAVER</div><h3>Hotspot mode</h3><p>Adds third-party image blocking, all-embed blocking and Motion Shield to freeze scripted animation loops.</p><strong>More saving, less decoration</strong></article>
         <article><div class="mode-badge">ULTRA</div><h3>Maximum saving</h3><p>Blocks images, media, web fonts and embeds, while Motion Shield freezes scripted visual loops. Main text, CSS and scripts remain available.</p><strong>For tight data limits</strong></article>
         <article><div class="mode-badge">CUSTOM</div><h3>Your rules</h3><p>Choose image scope, media, fonts, embeds, motion level and autoplay separately.</p><strong>Fine-grained control</strong></article>
@@ -58,7 +58,12 @@
 
     <section class="section split">
       <div class="explain-card"><p class="eyebrow">LOAD ONCE</p><h2>Blocked does not mean inaccessible.</h2><p>When WebLite blocks a visible image, video, or embed, it leaves a compact placeholder. Choose <b>Load once</b> to allow that item for the current page load without turning WebLite off.</p></div>
-      <div class="explain-card"><p class="eyebrow">FONT SAFETY</p><h2>Save font data without wrecking layouts.</h2><p>WebLite blocks web-font downloads but only replaces fonts on simple text containers. Complex positioned or animated typography is left alone to prevent overlap and broken layouts.</p></div>
+      <div class="explain-card"><p class="eyebrow">FONT SAFETY</p><h2>Do not trade savings for broken text.</h2><p>WebLite no longer force-replaces page typography by default. Study mode also keeps fonts untouched on sensitive layouts, and compatibility guards keep Apple product pages interactive.</p></div>
+    </section>
+
+    <section class="section split">
+      <div class="explain-card"><p class="eyebrow">FOCUS SHIELD</p><h2>Less clutter during study.</h2><p>Study, Saver and Ultra can hide recognized ad and promotional containers using conservative page heuristics. WebLite avoids obvious login, payment, captcha and consent surfaces.</p></div>
+      <div class="explain-card"><p class="eyebrow">PAGE COACH · BETA</p><h2>Ask about the page you are on.</h2><p>Page Coach can analyze page text and resource activity. When a browser-provided language model is available it can answer questions conversationally; otherwise WebLite falls back to local analysis without sending the page to a WebLite server.</p></div>
     </section>
 
     <section class="section">
@@ -75,7 +80,7 @@
       <div class="shield">✓</div><div><p class="eyebrow">PRIVACY</p><h2>Your browsing stays yours.</h2><p>No account. No analytics. No external server. No cloud processing. WebLite's settings and measured impact are stored locally in your browser profile.</p></div>
     </section>
 
-    <footer><strong>WebLite 1.4</strong><span>Built for a lighter, more controllable web — including study sessions on limited connections.</span></footer>
+    <footer><strong>WebLite 1.5</strong><span>Safer layouts, better on-demand media, Focus Shield and Page Coach beta.</span></footer>
   </main>
   <script src="tutorial.js"></script>
 </body>

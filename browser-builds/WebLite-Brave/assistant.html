@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WebLite Page Coach</title>
+  <link rel="stylesheet" href="assistant.css" />
+</head>
+<body>
+  <main class="coach-shell">
+    <header class="coach-header">
+      <div class="brand"><img src="icons/icon48.png" alt="WebLite logo" /><div><span>WEBLITE 1.5</span><h1>Page Coach <small>BETA</small></h1></div></div>
+      <button id="refreshPage">Re-analyze</button>
+    </header>
+
+    <section class="page-card">
+      <p class="eyebrow">CURRENT PAGE</p>
+      <h2 id="pageTitle">Reading page…</h2>
+      <p id="pageUrl" class="muted"></p>
+      <div class="stats">
+        <div><b id="requestCount">–</b><span>requests</span></div>
+        <div><b id="crossSiteCount">–</b><span>cross-site</span></div>
+        <div><b id="observedSize">–</b><span>observed data</span></div>
+      </div>
+    </section>
+
+    <section class="analysis-card">
+      <div class="analysis-head"><div><p class="eyebrow">QUICK ANALYSIS</p><h2 id="recommendation">Analyzing…</h2></div><span id="aiStatus" class="status">Checking AI…</span></div>
+      <p id="analysisText" class="muted">WebLite is reading the visible page text and resource activity.</p>
+    </section>
+
+    <section class="chat-card">
+      <p class="eyebrow">ASK ABOUT THIS PAGE</p>
+      <div id="conversation" class="conversation">
+        <div class="bubble coach">Ask for a short explanation, key points, or whether this page looks heavy for a study session.</div>
+      </div>
+      <form id="askForm">
+        <textarea id="question" rows="3" maxlength="700" placeholder="Example: Explain this page in simple words"></textarea>
+        <button id="askButton" type="submit">Ask Page Coach</button>
+      </form>
+      <p class="privacy-note">WebLite has no AI server. If your browser offers a built-in language model, Page Coach can use it. Otherwise it uses local text matching and page heuristics.</p>
+    </section>
+  </main>
+  <script src="assistant.js"></script>
+</body>
+</html>

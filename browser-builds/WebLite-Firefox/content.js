@@ -22,14 +22,7 @@ function isCrossSite(url) {
 }
 
 function resolvedMotionLevel(config = {}) {
-  const configured = config.motionLevel || (config.reduceMotion ? "reduce" : "none");
-  if (configured !== "reduce") return configured;
-  try {
-    const animationCount = document.getAnimations?.().length || 0;
-    const visualEngines = document.querySelectorAll?.("video, canvas").length || 0;
-    if (animationCount >= 5 || visualEngines >= 3) return "freeze";
-  } catch {}
-  return "reduce";
+  return config.motionLevel || (config.reduceMotion ? "reduce" : "none");
 }
 
 function setGuardState(config = {}) {
@@ -38,30 +31,38 @@ function setGuardState(config = {}) {
   root.dataset.webliteMedia = (config.media || config.pauseAutoplay) ? "1" : "0";
   root.dataset.webliteFonts = config.fonts ? "1" : "0";
   root.dataset.webliteMotion = resolvedMotionLevel(config);
+  root.dataset.webliteFocusShield = config.focusShield ? "1" : "0";
 }
 function clearGuardState() {
   const root = ensureRoot(); if (!root) return;
   delete root.dataset.weblite; delete root.dataset.webliteMedia;
   delete root.dataset.webliteFonts; delete root.dataset.webliteMotion;
+  delete root.dataset.webliteFocusShield; delete root.dataset.webliteMediaPass;
 }
 
+function mediaPassActive() { return ensureRoot()?.dataset.webliteMediaPass === "1"; }
+function grantShortMediaPass(ms = 20000) {
+  const root = ensureRoot(); if (!root) return;
+  root.dataset.webliteMediaPass = "1";
+  setTimeout(() => { if (root.dataset.webliteMediaPass === "1") delete root.dataset.webliteMediaPass; }, ms);
+}
 function pauseOneMedia(media) {
-  if (!(media instanceof HTMLMediaElement) || media.dataset.webliteAllowOnce === "1") return;
+  if (mediaPassActive() || !(media instanceof HTMLMediaElement) || media.dataset.webliteAllowOnce === "1") return;
   try { media.autoplay = false; media.removeAttribute("autoplay"); media.preload = "none"; media.pause(); } catch {}
 }
 function stopMedia(root = document) {
-  if (!(activeConfig?.media || activeConfig?.pauseAutoplay)) return;
+  if (mediaPassActive() || !(activeConfig?.media || activeConfig?.pauseAutoplay)) return;
   if (root instanceof HTMLMediaElement) pauseOneMedia(root);
   root.querySelectorAll?.("video, audio").forEach(pauseOneMedia);
 }
 function cancelMotion() {
   const level = resolvedMotionLevel(activeConfig || {});
   const root = ensureRoot(); if (root && activeConfig) root.dataset.webliteMotion = level;
-  if (level === "none") return;
+  if (level !== "freeze") return;
   try { document.getAnimations?.().forEach(a => { try { a.cancel(); } catch { try { a.pause(); } catch {} } }); } catch {}
 }
 function mediaEventGuard(event) {
-  if (!(activeConfig?.media || activeConfig?.pauseAutoplay)) return;
+  if (mediaPassActive() || !(activeConfig?.media || activeConfig?.pauseAutoplay)) return;
   const media = event.target;
   if (media instanceof HTMLMediaElement && media.dataset.webliteAllowOnce !== "1") pauseOneMedia(media);
 }
@@ -117,6 +118,7 @@ function placeholderLabel(kind) {
 
 async function loadOnce(el, placeholder, kind, url) {
   try {
+    if (kind === "media") grantShortMediaPass();
     const response = await EXT.runtime.sendMessage({ type: "ALLOW_RESOURCE_ONCE", kind, url, pageUrl: location.href });
     if (!response?.ok) throw new Error(response?.error || "Couldn't allow resource");
     el.dataset.webliteAllowOnce = "1";
@@ -129,7 +131,13 @@ async function loadOnce(el, placeholder, kind, url) {
       if (srcset) { el.removeAttribute("srcset"); void el.offsetWidth; el.setAttribute("srcset", srcset); }
       if (src) { el.removeAttribute("src"); void el.offsetWidth; el.setAttribute("src", src); }
     } else if (kind === "media") {
-      try { el.preload = "auto"; el.load(); await el.play(); } catch {}
+      try {
+        el.controls = true;
+        el.preload = "auto";
+        el.load();
+        await new Promise(r => setTimeout(r, 120));
+        await el.play();
+      } catch {}
     } else if (kind === "frame") {
       const src = el.getAttribute("src");
       if (src) { el.setAttribute("src", "about:blank"); setTimeout(() => el.setAttribute("src", src), 0); }
@@ -147,7 +155,7 @@ function ensurePlaceholder(el) {
   const id = `wl-${++placeholderSeq}`;
   el.dataset.weblitePlaceholderId = id;
   const holder = document.createElement("div");
-  holder.className = "weblite-load-placeholder";
+  holder.className = kind === "media" ? "weblite-load-placeholder weblite-media-card" : "weblite-load-placeholder";
   holder.setAttribute(PLACEHOLDER_ATTR, id);
   holder.dataset.kind = kind;
   holder.style.width = `${size.width}px`;
@@ -155,7 +163,9 @@ function ensurePlaceholder(el) {
   holder.style.maxWidth = "100%";
   if (size.display === "inline" || size.display === "inline-block") holder.style.display = "inline-flex";
   const [title, action] = placeholderLabel(kind);
-  holder.innerHTML = `<span class="weblite-ph-mark">WL</span><span class="weblite-ph-copy"><b>${title}</b><small>WebLite saved this resource.</small></span><button type="button">${action}</button>`;
+  holder.innerHTML = kind === "media"
+    ? `<button class="weblite-media-play" type="button" aria-label="Play video once"><span class="weblite-play-icon">▶</span><span class="weblite-play-copy"><b>Play video</b><small>Load for this page only</small></span></button>`
+    : `<span class="weblite-ph-mark">WL</span><span class="weblite-ph-copy"><b>${title}</b><small>WebLite saved this resource.</small></span><button type="button">${action}</button>`;
   const button = holder.querySelector("button");
   button.addEventListener("click", async (event) => {
     event.preventDefault(); event.stopPropagation(); button.disabled = true; button.textContent = "Loading…";
@@ -191,7 +201,9 @@ function isSafeTextElement(el) {
   return true;
 }
 function applySafeFontFallbacks(root = document) {
-  if (!activeConfig?.fonts) return;
+  // Network font blocking remains available, but visual font replacement is
+  // disabled by default because font metric changes can collapse real layouts.
+  if (!activeConfig?.fonts || activeConfig.visualFontFallback !== true) return;
   const list = [];
   if (root instanceof Element && root.matches?.(SAFE_TEXT_SELECTOR)) list.push(root);
   root.querySelectorAll?.(SAFE_TEXT_SELECTOR).forEach(el => list.push(el));
@@ -210,13 +222,51 @@ function clearFontFallbacks() {
   });
 }
 
+const FOCUS_HIDDEN = "data-weblite-focus-hidden";
+function safeToHide(el) {
+  if (!(el instanceof HTMLElement)) return false;
+  const meta = `${el.id || ""} ${typeof el.className === "string" ? el.className : ""} ${el.getAttribute("aria-label") || ""} ${el.getAttribute("title") || ""}`.toLowerCase();
+  if (/(cookie|consent|login|sign[- ]?in|checkout|payment|captcha|verification|verify|cart)/i.test(meta)) return false;
+  return true;
+}
+function looksLikeAd(el) {
+  if (!safeToHide(el)) return false;
+  try {
+    if (el.matches('ins.adsbygoogle,[data-ad],[data-ad-slot],[data-google-query-id],[aria-label*="advertisement" i],[id^="ad-" i],[id*="-ad-" i],[class~="ad"],[class*=" ad-" i],[class*="advert" i],[id*="advert" i],[class*="sponsor" i],[id*="sponsor" i],iframe[src*="doubleclick" i],iframe[src*="googlesyndication" i]')) return true;
+    const cs = getComputedStyle(el);
+    const rect = el.getBoundingClientRect();
+    const z = Number.parseInt(cs.zIndex, 10) || 0;
+    const text = `${el.getAttribute("aria-label") || ""} ${el.textContent || ""}`.slice(0,220).toLowerCase();
+    const popupish = ["fixed","sticky"].includes(cs.position) && z >= 20 && rect.width > 80 && rect.height > 40 && rect.width * rect.height < innerWidth * innerHeight * .55;
+    return popupish && /\b(ad|advertisement|sponsored|promoted)\b/i.test(text);
+  } catch { return false; }
+}
+function hideFocusItem(el) {
+  if (!(el instanceof HTMLElement) || el.hasAttribute(FOCUS_HIDDEN)) return;
+  el.setAttribute(FOCUS_HIDDEN, el.style.display || "__empty__");
+  el.style.setProperty("display", "none", "important");
+}
+function scanFocusShield(root = document) {
+  if (!activeConfig?.focusShield) return;
+  const selector = 'ins.adsbygoogle,[data-ad],[data-ad-slot],[data-google-query-id],[aria-label*="advertisement" i],[id^="ad-" i],[id*="-ad-" i],[class~="ad"],[class*=" ad-" i],[class*="advert" i],[id*="advert" i],[class*="sponsor" i],[id*="sponsor" i],iframe[src*="doubleclick" i],iframe[src*="googlesyndication" i]';
+  if (root instanceof Element && looksLikeAd(root)) hideFocusItem(root);
+  root.querySelectorAll?.(selector).forEach(el => { if (looksLikeAd(el)) hideFocusItem(el); });
+}
+function clearFocusShield() {
+  document.querySelectorAll?.(`[${FOCUS_HIDDEN}]`).forEach(el => {
+    const prev = el.getAttribute(FOCUS_HIDDEN);
+    if (prev === "__empty__") el.style.removeProperty("display"); else el.style.display = prev || "";
+    el.removeAttribute(FOCUS_HIDDEN);
+  });
+}
+
 function startEnforcement() {
   if (!domObserver) {
     domObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
           if (!(node instanceof Element)) continue;
-          stopMedia(node); scanPlaceholders(node); applySafeFontFallbacks(node);
+          stopMedia(node); scanPlaceholders(node); applySafeFontFallbacks(node); scanFocusShield(node);
         }
       }
       cancelMotion();
@@ -226,7 +276,7 @@ function startEnforcement() {
   document.addEventListener("play", mediaEventGuard, true);
   document.addEventListener("playing", mediaEventGuard, true);
   if (!enforcementTimer) enforcementTimer = setInterval(() => {
-    stopMedia(document); cancelMotion(); scanPlaceholders(document);
+    stopMedia(document); cancelMotion(); scanPlaceholders(document); scanFocusShield(document);
   }, 700);
 }
 function stopEnforcement() {
@@ -239,13 +289,16 @@ function stopEnforcement() {
 function buildRuntimeCss(config = {}) {
   const chunks = [];
   const motionLevel = config.motionLevel || (config.reduceMotion ? "reduce" : "none");
-  if (motionLevel !== "none") chunks.push(`
+  if (motionLevel === "freeze") chunks.push(`
     html[data-weblite="on"] *, html[data-weblite="on"] *::before, html[data-weblite="on"] *::after {
       animation: none !important; animation-duration: 0s !important; animation-delay: 0s !important;
       animation-iteration-count: 1 !important; animation-play-state: paused !important;
       transition: none !important; transition-duration: 0s !important; transition-delay: 0s !important;
       scroll-behavior: auto !important;
     }
+  `);
+  else if (motionLevel === "reduce") chunks.push(`
+    html[data-weblite="on"] { scroll-behavior:auto !important; }
   `);
   chunks.push(`
     .weblite-load-placeholder{box-sizing:border-box!important;min-width:80px!important;min-height:48px!important;align-items:center!important;justify-content:center!important;gap:9px!important;padding:10px!important;border:1px solid rgba(65,122,165,.38)!important;border-radius:12px!important;background:linear-gradient(135deg,rgba(247,243,234,.96),rgba(227,238,246,.96))!important;color:#17344b!important;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)!important;overflow:hidden!important;vertical-align:middle!important;}
@@ -256,6 +309,13 @@ function buildRuntimeCss(config = {}) {
     .weblite-load-placeholder button{appearance:none!important;border:1px solid rgba(52,111,156,.35)!important;border-radius:999px!important;background:#fffaf0!important;color:#245f8d!important;padding:6px 9px!important;font:700 9px/1 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important;cursor:pointer!important;white-space:nowrap!important;}
     .weblite-load-placeholder button:hover{background:#e9f2f8!important;}
     .weblite-load-placeholder button:disabled{opacity:.65!important;cursor:wait!important;}
+    .weblite-media-card{padding:0!important;background:linear-gradient(145deg,rgba(8,23,37,.96),rgba(19,43,63,.96))!important;border-color:rgba(106,166,205,.4)!important;min-height:96px!important;}
+    .weblite-media-play{width:100%!important;height:100%!important;min-height:96px!important;border:0!important;border-radius:12px!important;background:transparent!important;color:#f8f3e9!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;padding:16px!important;cursor:pointer!important;}
+    .weblite-media-play:hover{background:rgba(106,166,205,.08)!important;}
+    .weblite-play-icon{width:46px!important;height:46px!important;border-radius:50%!important;display:grid!important;place-items:center!important;padding-left:3px!important;background:linear-gradient(135deg,#6aa6cd,#397bac)!important;color:#fff!important;font-size:18px!important;box-shadow:0 8px 24px rgba(57,123,172,.32)!important;}
+    .weblite-play-copy{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:3px!important;text-align:left!important;}
+    .weblite-play-copy b{font:800 12px/1.1 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important;color:#fff!important;}
+    .weblite-play-copy small{font:600 8px/1.2 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important;color:#9fb7ca!important;}
     html[data-weblite="on"] code, html[data-weblite="on"] pre, html[data-weblite="on"] kbd, html[data-weblite="on"] samp{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace!important;}
   `);
   return chunks.join("\n");
@@ -268,10 +328,10 @@ function applyLitePageTweaks(config = {}) {
   let style = document.getElementById(STYLE_ID);
   if (!style) { style = document.createElement("style"); style.id = STYLE_ID; (document.head || root).appendChild(style); }
   style.textContent = buildRuntimeCss(activeConfig);
-  stopMedia(document); cancelMotion(); applySafeFontFallbacks(document); scanPlaceholders(document); startEnforcement();
+  stopMedia(document); cancelMotion(); applySafeFontFallbacks(document); scanPlaceholders(document); scanFocusShield(document); startEnforcement();
 }
 function removeLitePageTweaks() {
-  activeConfig = null; clearGuardState(); document.getElementById(STYLE_ID)?.remove(); stopEnforcement(); clearPlaceholders(); clearFontFallbacks();
+  activeConfig = null; clearGuardState(); document.getElementById(STYLE_ID)?.remove(); stopEnforcement(); clearPlaceholders(); clearFontFallbacks(); clearFocusShield();
 }
 
 function resourceKind(entry) {
@@ -323,6 +383,22 @@ function reportStatsSoon(delay = 900) {
 
 EXT.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "GET_PAGE_STATS") { sendResponse(getPageStats()); return; }
+  if (message.type === "GET_PAGE_CONTEXT") {
+    const main = document.querySelector("main,article,[role='main']") || document.body;
+    const parts = [];
+    main?.querySelectorAll?.("h1,h2,h3,p,li").forEach(el => {
+      const text = (el.innerText || el.textContent || "").replace(/\s+/g, " ").trim();
+      if (text && text.length > 20) parts.push(text);
+    });
+    sendResponse({
+      title: document.title,
+      url: location.href,
+      text: parts.join("\n").slice(0, 14000),
+      headings: [...document.querySelectorAll("h1,h2,h3")].map(el => (el.innerText || "").trim()).filter(Boolean).slice(0, 20),
+      stats: getPageStats()
+    });
+    return;
+  }
   if (message.type === "APPLY_LITE_TWEAKS") { applyLitePageTweaks(message.config || {}); sendResponse({ok:true}); return; }
   if (message.type === "REMOVE_LITE_TWEAKS") { removeLitePageTweaks(); sendResponse({ok:true}); return; }
 });

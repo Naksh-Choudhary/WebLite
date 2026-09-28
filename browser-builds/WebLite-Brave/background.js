@@ -13,7 +13,8 @@ const DEFAULT_SETTINGS = {
     fonts: true,
     frames: "thirdParty",
     motionLevel: "reduce",
-    pauseAutoplay: true
+    pauseAutoplay: true,
+    focusShield: false
   },
   siteModes: {}
 };
@@ -32,15 +33,17 @@ const PRESETS = {
     fonts: true,
     frames: "thirdParty",
     motionLevel: "reduce",
-    pauseAutoplay: true
+    pauseAutoplay: true,
+    focusShield: false
   },
   study: {
     images: "thirdParty",
     media: true,
-    fonts: true,
+    fonts: false,
     frames: "thirdParty",
     motionLevel: "reduce",
-    pauseAutoplay: true
+    pauseAutoplay: true,
+    focusShield: true
   },
   saver: {
     images: "thirdParty",
@@ -48,7 +51,8 @@ const PRESETS = {
     fonts: true,
     frames: "all",
     motionLevel: "freeze",
-    pauseAutoplay: true
+    pauseAutoplay: true,
+    focusShield: true
   },
   ultra: {
     images: "all",
@@ -56,7 +60,8 @@ const PRESETS = {
     fonts: true,
     frames: "all",
     motionLevel: "freeze",
-    pauseAutoplay: true
+    pauseAutoplay: true,
+    focusShield: true
   }
 };
 
@@ -114,9 +119,19 @@ async function getStats() {
 
 async function setStats(stats) { await EXT.storage.local.set({ webLiteStats: stats }); }
 
-function configFor(mode, customConfig) {
-  if (mode === "custom") return { ...clone(DEFAULT_SETTINGS.customConfig), ...(customConfig || {}) };
-  return clone(PRESETS[mode] || PRESETS.balanced);
+function configFor(mode, customConfig, url = "") {
+  const config = mode === "custom"
+    ? { ...clone(DEFAULT_SETTINGS.customConfig), ...(customConfig || {}) }
+    : clone(PRESETS[mode] || PRESETS.balanced);
+
+  // Compatibility guard for animation-heavy Apple product pages.
+  // Balanced/Study should remain usable rather than freezing sliders or typography.
+  const host = getHost(url);
+  if ((host === "apple.com" || host.endsWith(".apple.com")) && (mode === "balanced" || mode === "study")) {
+    config.fonts = false;
+    config.motionLevel = "none";
+  }
+  return config;
 }
 
 function ruleCondition(tabId, resourceTypes, scope = "all", extra = {}) {
@@ -231,7 +246,7 @@ async function applyMode(tabId, { enabled, mode, baseline, customConfig, cookieA
 
   const effectiveMode = mode || previous.mode || "balanced";
   const effectiveCustom = customConfig || previous.customConfig || clone(DEFAULT_SETTINGS.customConfig);
-  const config = configFor(effectiveMode, effectiveCustom);
+  const config = configFor(effectiveMode, effectiveCustom, url || previous.url || "");
 
   if (enabled) {
     const built = buildRules(tabId, config, state);
@@ -362,7 +377,7 @@ EXT.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({
         enabled: Boolean(tabState?.enabled),
         mode: tabState?.mode || "balanced",
-        config: tabState?.config || configFor(tabState?.mode || "balanced", tabState?.customConfig)
+        config: tabState?.config || configFor(tabState?.mode || "balanced", tabState?.customConfig, tabState?.url || "")
       });
       return;
     }
@@ -376,7 +391,7 @@ EXT.runtime.onMessage.addListener((message, sender, sendResponse) => {
         enabled: false,
         mode: suggested.mode,
         customConfig: suggested.customConfig,
-        config: configFor(suggested.mode, suggested.customConfig),
+        config: configFor(suggested.mode, suggested.customConfig, message.url || ""),
         ruleIds: [],
         tempRuleIds: [],
         baseline: null,
@@ -472,6 +487,12 @@ EXT.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     if (message.type === "OPEN_SETTINGS") {
       await EXT.runtime.openOptionsPage();
+      sendResponse({ ok: true });
+      return;
+    }
+
+    if (message.type === "OPEN_ASSISTANT") {
+      await EXT.tabs.create({ url: EXT.runtime.getURL("assistant.html") });
       sendResponse({ ok: true });
       return;
     }

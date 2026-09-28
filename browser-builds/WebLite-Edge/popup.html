@@ -10,13 +10,14 @@
   <main class="shell">
     <header class="topbar">
       <div class="brand">
-        <div class="mark" aria-hidden="true">W</div>
+        <img class="brand-logo" src="icons/icon32.png" alt="" aria-hidden="true" />
         <div>
           <div class="brand-name">WebLite</div>
           <div class="brand-sub">LIGHTER WEB · LIVE</div>
         </div>
       </div>
       <div class="top-actions">
+        <button id="pageCoachButton" class="icon-button coach-button" title="Page Coach" aria-label="Open Page Coach">✦</button>
         <button id="tutorialButton" class="icon-button" title="How WebLite works" aria-label="Open tutorial">?</button>
         <button id="settingsButton" class="icon-button" title="Settings" aria-label="Open settings">⚙</button>
       </div>
@@ -65,6 +66,7 @@
           </div>
           <div class="control-row"><div><strong>Motion</strong><span>Reduce CSS motion or freeze scripted animation.</span></div><select id="motionSelect"><option value="none">Keep</option><option value="reduce">Reduce</option><option value="freeze">Freeze</option></select></div>
           <div class="control-row"><div><strong>Stop autoplay</strong><span>Pause auto-starting media.</span></div><input id="autoplayToggle" type="checkbox" /></div>
+          <div class="control-row"><div><strong>Focus Shield</strong><span>Hide recognized ad/promo clutter with conservative rules.</span></div><input id="focusShieldToggle" type="checkbox" /></div>
         </div>
       </details>
     </section>
