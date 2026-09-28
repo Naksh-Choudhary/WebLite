@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "WebLite",
-  "version": "1.5.0",
-  "description": "WebLite for Edge: Study Mode, Focus Shield, safer layouts, on-demand media, live savings, and Page Coach beta.",
+  "version": "1.6.0",
+  "description": "WebLite for Edge: Study Mode, reversible AI Smart Filter, safer layouts, on-demand media, live savings, and Page Coach.",
   "minimum_chrome_version": "121",
   "permissions": [
     "storage",
