@@ -492,7 +492,9 @@ EXT.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     if (message.type === "OPEN_ASSISTANT") {
-      await EXT.tabs.create({ url: EXT.runtime.getURL("assistant.html") });
+      const sourceTabId = Number(message.tabId);
+      const suffix = Number.isInteger(sourceTabId) ? `?tabId=${sourceTabId}` : "";
+      await EXT.tabs.create({ url: EXT.runtime.getURL("assistant.html" + suffix) });
       sendResponse({ ok: true });
       return;
     }

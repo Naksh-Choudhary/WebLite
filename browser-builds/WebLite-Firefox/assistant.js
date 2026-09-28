@@ -48,7 +48,15 @@ function localAnswer(question,ctx){
 
 async function analyze(){
   $("pageTitle").textContent="Reading page…";$("analysisText").textContent="WebLite is reading the active page.";
-  const [tab]=await EXT.tabs.query({active:true,currentWindow:true});
+  const requestedId=Number(new URLSearchParams(location.search).get("tabId"));
+  let tab=null;
+  if(Number.isInteger(requestedId)){
+    try{tab=await EXT.tabs.get(requestedId)}catch{}
+  }
+  if(!tab){
+    const tabs=await EXT.tabs.query({currentWindow:true});
+    tab=tabs.find(t=>/^https?:/i.test(t.url||""));
+  }
   if(!tab?.id||!/^https?:/i.test(tab.url||""))throw new Error("Open a normal website first, then re-open Page Coach.");
   context=await EXT.tabs.sendMessage(tab.id,{type:"GET_PAGE_CONTEXT"},{frameId:0});
   $("pageTitle").textContent=context?.title||"Untitled page";$("pageUrl").textContent=context?.url||tab.url;
