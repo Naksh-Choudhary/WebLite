@@ -1,81 +1,27 @@
 const EXT=globalThis.browser||globalThis.chrome;
 const $=id=>document.getElementById(id);
-let context=null, model=null, modelChecked=false;
-
+let context=null,model=null,modelChecked=false,sourceTab=null,smartState={hidden:[],candidates:[]};
 function fmt(bytes){const v=Math.max(0,Number(bytes||0));if(v<1024)return Math.round(v)+" B";if(v<1024**2)return (v/1024).toFixed(1)+" KB";return (v/1024**2).toFixed(1)+" MB"}
 function addBubble(text,who="coach"){const d=document.createElement("div");d.className="bubble "+who;d.textContent=text;$("conversation").appendChild(d);$("conversation").scrollTop=$("conversation").scrollHeight}
-
-async function getModel(){
-  if(modelChecked)return model;
-  modelChecked=true;
-  try{
-    if(globalThis.LanguageModel?.create){
-      const availability=await globalThis.LanguageModel.availability?.();
-      if(availability==="unavailable")return null;
-      model=await globalThis.LanguageModel.create({
-        initialPrompts:[{role:"system",content:"You are WebLite Page Coach. Answer only from the supplied webpage context. Be concise, student-friendly, and say when the page context is insufficient."}]
-      });
-      return model;
-    }
-  }catch{}
-  try{
-    if(globalThis.ai?.languageModel?.create){
-      model=await globalThis.ai.languageModel.create({systemPrompt:"You are WebLite Page Coach. Answer only from supplied page context. Be concise and student-friendly."});
-      return model;
-    }
-  }catch{}
-  return null;
-}
-
-function localRecommendation(ctx){
-  const s=ctx?.stats||{};const requests=Number(s.requestCount||0);const cross=Number(s.thirdPartyCount||0);
-  const media=Number(s.breakdown?.media?.count||0);const images=Number(s.breakdown?.image?.count||0);
-  if(media>0||cross>Math.max(10,requests*.35))return ["Study mode looks useful here.","This page has noticeable media or cross-site activity. Study mode can trim optional content while keeping the main reading flow safer."];
-  if(requests>90||images>35)return ["Balanced or Study mode could help.","The page is fairly resource-heavy. Start with Balanced; use Study if you want fewer distractions and cross-site images."];
-  return ["This page already looks fairly light.","Balanced is probably enough. Study mode still helps if you want Focus Shield and quieter browsing."];
-}
-
-function localAnswer(question,ctx){
-  const terms=(question.toLowerCase().match(/[a-z0-9]{3,}/g)||[]).filter(x=>!["this","that","what","with","from","page","about","explain"].includes(x));
-  const sentences=String(ctx?.text||"").split(/(?<=[.!?])\s+/).filter(x=>x.length>35&&x.length<500);
-  const ranked=sentences.map(s=>({s,score:terms.reduce((n,t)=>n+(s.toLowerCase().includes(t)?1:0),0)})).sort((a,b)=>b.score-a.score);
-  const hits=ranked.filter(x=>x.score>0).slice(0,3).map(x=>x.s);
-  if(hits.length)return "From the visible page text:\n\n"+hits.join("\n\n");
-  const top=sentences.slice(0,3);
-  if(top.length)return "Built-in AI is not available in this browser, so I used local page text. The page mainly says:\n\n"+top.join("\n\n");
-  return "I could not find enough readable page text to answer that. Try opening the main article/content area and re-analyzing.";
-}
-
-async function analyze(){
-  $("pageTitle").textContent="Reading page…";$("analysisText").textContent="WebLite is reading the active page.";
-  const requestedId=Number(new URLSearchParams(location.search).get("tabId"));
-  let tab=null;
-  if(Number.isInteger(requestedId)){
-    try{tab=await EXT.tabs.get(requestedId)}catch{}
-  }
-  if(!tab){
-    const tabs=await EXT.tabs.query({currentWindow:true});
-    tab=tabs.find(t=>/^https?:/i.test(t.url||""));
-  }
-  if(!tab?.id||!/^https?:/i.test(tab.url||""))throw new Error("Open a normal website first, then re-open Page Coach.");
-  context=await EXT.tabs.sendMessage(tab.id,{type:"GET_PAGE_CONTEXT"},{frameId:0});
-  $("pageTitle").textContent=context?.title||"Untitled page";$("pageUrl").textContent=context?.url||tab.url;
-  $("requestCount").textContent=String(context?.stats?.requestCount||0);$("crossSiteCount").textContent=String(context?.stats?.thirdPartyCount||0);$("observedSize").textContent=fmt(context?.stats?.measuredBytes||0);
-  const [title,body]=localRecommendation(context);$("recommendation").textContent=title;$("analysisText").textContent=body;
-  const m=await getModel();$("aiStatus").textContent=m?"Browser AI available":"Local analysis mode";
-}
-
-$("askForm").addEventListener("submit",async e=>{
-  e.preventDefault();const q=$("question").value.trim();if(!q||!context)return;
-  addBubble(q,"user");$("question").value="";$("askButton").disabled=true;$("askButton").textContent="Thinking…";
-  try{
-    const m=await getModel();
-    if(m?.prompt){
-      const prompt=`PAGE TITLE: ${context.title}\nURL: ${context.url}\nPAGE TEXT:\n${context.text.slice(0,10000)}\n\nUSER QUESTION: ${q}`;
-      const answer=await m.prompt(prompt);addBubble(String(answer||"I could not generate a response."));
-    }else addBubble(localAnswer(q,context));
-  }catch{addBubble(localAnswer(q,context));}
-  finally{$("askButton").disabled=false;$("askButton").textContent="Ask Page Coach";}
-});
+async function sendPage(message){if(!sourceTab?.id)throw new Error("The original page is no longer available.");return EXT.tabs.sendMessage(sourceTab.id,message,{frameId:0})}
+async function getSourceTab(){const requestedId=Number(new URLSearchParams(location.search).get("tabId"));if(Number.isInteger(requestedId)){try{const t=await EXT.tabs.get(requestedId);if(/^https?:/i.test(t?.url||""))return t}catch{}}const tabs=await EXT.tabs.query({currentWindow:true});return tabs.find(t=>/^https?:/i.test(t.url||""))||null}
+async function getModel(){if(modelChecked)return model;modelChecked=true;try{if(globalThis.LanguageModel?.create){const availability=await globalThis.LanguageModel.availability?.();if(availability==="unavailable")return null;model=await globalThis.LanguageModel.create({initialPrompts:[{role:"system",content:"You are WebLite Smart Filter. Be conservative. Never classify lesson content, navigation, login, payment, consent, captcha, forms, or useful controls as ads. If unsure, keep it."}]});return model}}catch{}try{if(globalThis.ai?.languageModel?.create){model=await globalThis.ai.languageModel.create({systemPrompt:"You are WebLite Smart Filter. Be conservative. Keep anything uncertain or useful."});return model}}catch{}return null}
+function localRecommendation(ctx){const s=ctx?.stats||{};const requests=Number(s.requestCount||0);const cross=Number(s.thirdPartyCount||0);const media=Number(s.breakdown?.media?.count||0);if(media>0||cross>Math.max(10,requests*.35))return ["Smart Filter is useful here.","This page has noticeable media or cross-site activity. WebLite will hide only high-confidence ad/promo clutter and keep everything reversible."];if(requests>90)return ["This page is fairly heavy.","Balanced or Study mode can help. Smart Filter is intentionally conservative so it does not remove useful content just to make the page look cleaner."];return ["This page already looks fairly light.","Smart Filter can still remove obvious ad/promo clutter, but it should leave uncertain content alone."]}
+function renderHidden(){const hidden=smartState.hidden||[];$("hiddenCount").textContent=hidden.length+" hidden";if(!hidden.length){$("hiddenList").innerHTML="<p class=\"muted\">Nothing is hidden right now.</p>";return}$("hiddenList").innerHTML="";hidden.forEach((item,i)=>{const row=document.createElement("div");row.className="hidden-item";const idx=document.createElement("div");idx.className="hidden-index";idx.textContent=String(i+1);const copy=document.createElement("div");copy.className="hidden-copy";const title=document.createElement("b");title.textContent=(item.text||"Hidden page item").slice(0,100);const sub=document.createElement("span");sub.textContent=(item.reason||"filtered")+" · "+Math.round(Number(item.confidence||0)*100)+"% confidence";copy.append(title,sub);const btn=document.createElement("button");btn.textContent="Restore";btn.addEventListener("click",()=>restoreIds([item.id]));row.append(idx,copy,btn);$("hiddenList").appendChild(row)})}
+async function refreshSmartState(){smartState=await sendPage({type:"GET_SMART_STATE"})||{hidden:[],candidates:[]};renderHidden();return smartState}
+function parseJsonArray(raw){const text=String(raw||"");const a=text.indexOf("["),b=text.lastIndexOf("]");if(a<0||b<a)return [];try{const data=JSON.parse(text.slice(a,b+1));return Array.isArray(data)?data:[]}catch{return []}}
+async function classifyWithAI(candidates){const m=await getModel();if(!m?.prompt||!candidates?.length)return {used:false,decisions:[]};const compact=candidates.slice(0,25).map(c=>({id:c.id,tag:c.tag,role:c.role,text:c.text?.slice(0,180),aria:c.aria,title:c.title,classHint:c.classHint?.slice(0,120),src:c.src?.slice(0,180),href:c.href?.slice(0,180),position:c.position,size:[c.width,c.height],inMain:c.inMain,heuristic:c.adScore}));const prompt="Classify webpage elements for a reversible browser cleaner.\nRules:\n- action must be hide or keep.\n- HIDE only obvious advertising, sponsored/promotional clutter, or disposable marketing overlays.\n- KEEP main/article content, lesson diagrams, navigation, videos belonging to the content, login/payment/consent/captcha/forms, and anything uncertain.\n- Be conservative. A wrong hide is worse than leaving an ad visible.\n- Only use confidence >=0.90 for hide.\nReturn ONLY a JSON array of objects with id, action, confidence, reason.\nPAGE: "+(context?.title||"")+"\nELEMENTS:\n"+JSON.stringify(compact);try{const raw=await m.prompt(prompt);const decisions=parseJsonArray(raw).filter(x=>x&&x.id&&(x.action==="hide"||x.action==="keep"));return {used:true,decisions}}catch{return {used:false,decisions:[]}}}
+async function smartClean(opts={}){const announce=opts.announce!==false;$("cleanPage").disabled=true;$("cleanPage").textContent="Analyzing…";try{const local=await sendPage({type:"RUN_SMART_FILTER"});await refreshSmartState();const m=await getModel();$("aiStatus").textContent=m?"Browser AI + local guardrails":"Local precision mode";if(m){const hiddenIds=new Set((smartState.hidden||[]).map(h=>h.id));const candidates=(smartState.candidates||[]).filter(c=>!hiddenIds.has(c.id));const ai=await classifyWithAI(candidates);if(ai.decisions.length){await sendPage({type:"APPLY_SMART_DECISIONS",decisions:ai.decisions});await refreshSmartState()}}if(announce)addBubble("Smart clean finished. "+smartState.hidden.length+" item"+(smartState.hidden.length===1?"":"s")+" currently hidden. Nothing was deleted; you can restore any item here or by asking me.");return local}finally{$("cleanPage").disabled=false;$("cleanPage").textContent="Smart clean page"}}
+async function restoreIds(ids){const r=await sendPage({type:"RESTORE_SMART",ids});await refreshSmartState();addBubble(r?.restored?"Restored "+r.restored+" item"+(r.restored===1?"":"s")+".":"I could not find that hidden item anymore.")}
+async function restoreLast(){const r=await sendPage({type:"RESTORE_SMART",last:true});await refreshSmartState();addBubble(r?.restored?"I restored the most recently hidden item.":"There is nothing left to undo.")}
+async function restoreAll(){const r=await sendPage({type:"RESTORE_SMART",all:true});await refreshSmartState();const n=r?.restored||0;addBubble("Restored "+n+" hidden item"+(n===1?"":"s")+".")}
+function hiddenSummary(){const hidden=smartState.hidden||[];if(!hidden.length)return "I have not hidden anything on this page.";return "Currently hidden:\n"+hidden.map((x,i)=>(i+1)+". "+(x.text||"page item").slice(0,90)+" — "+(x.reason||"filtered")).join("\n")}
+function localAnswer(question,ctx){const terms=(question.toLowerCase().match(/[a-z0-9]{3,}/g)||[]).filter(x=>!["this","that","what","with","from","page","about","explain"].includes(x));const sentences=String(ctx?.text||"").split(/(?<=[.!?])\s+/).filter(x=>x.length>35&&x.length<500);const ranked=sentences.map(s=>({s,score:terms.reduce((n,t)=>n+(s.toLowerCase().includes(t)?1:0),0)})).sort((a,b)=>b.score-a.score);const hits=ranked.filter(x=>x.score>0).slice(0,3).map(x=>x.s);if(hits.length)return "From the visible page text:\n\n"+hits.join("\n\n");const top=sentences.slice(0,3);if(top.length)return "Built-in AI is not available here, so I used local page text:\n\n"+top.join("\n\n");return "I could not find enough readable page text to answer that."}
+async function answerChat(q){const lower=q.toLowerCase();if(/what did you hide|show (me )?(the )?hidden|hidden items/.test(lower)){addBubble(hiddenSummary());return}if(/restore everything|restore all|bring everything back|show everything/.test(lower)){await restoreAll();return}if(/undo( last)?|restore last|bring (that|it) back|not an ad|wasn.t an ad|was not an ad/.test(lower)){await restoreLast();return}const num=lower.match(/(?:restore|bring back|show)\s*(?:item\s*)?(\d+)/);if(num){const item=(smartState.hidden||[])[Number(num[1])-1];if(item)await restoreIds([item.id]);else addBubble("I cannot find that item number. Ask what did you hide to see the current list.");return}if(/clean (this )?page|remove (the )?ads|hide (the )?ads/.test(lower)){await smartClean();return}const m=await getModel();if(m?.prompt){const prompt="PAGE TITLE: "+context.title+"\nURL: "+context.url+"\nPAGE TEXT:\n"+context.text.slice(0,9000)+"\n\nCURRENTLY HIDDEN:\n"+hiddenSummary()+"\n\nUSER: "+q+"\nAnswer only from this page.";try{const answer=await m.prompt(prompt);addBubble(String(answer||"I could not generate a response."));return}catch{}}addBubble(localAnswer(q,context))}
+async function analyze(){$("pageTitle").textContent="Reading page…";$("analysisText").textContent="WebLite is reading the original page.";sourceTab=await getSourceTab();if(!sourceTab?.id)throw new Error("Open a normal website first, then re-open WebLite.");context=await sendPage({type:"GET_PAGE_CONTEXT"});$("pageTitle").textContent=context?.title||"Untitled page";$("pageUrl").textContent=context?.url||sourceTab.url;$("requestCount").textContent=String(context?.stats?.requestCount||0);$("crossSiteCount").textContent=String(context?.stats?.thirdPartyCount||0);$("observedSize").textContent=fmt(context?.stats?.measuredBytes||0);const pair=localRecommendation(context);$("recommendation").textContent=pair[0];$("analysisText").textContent=pair[1];const m=await getModel();$("aiStatus").textContent=m?"Browser AI available":"Local precision mode";await refreshSmartState()}
+$("askForm").addEventListener("submit",async e=>{e.preventDefault();const q=$("question").value.trim();if(!q||!context)return;addBubble(q,"user");$("question").value="";$("askButton").disabled=true;$("askButton").textContent="Thinking…";try{await answerChat(q)}catch(err){addBubble(err.message||"I could not complete that action.")}finally{$("askButton").disabled=false;$("askButton").textContent="Ask WebLite"}});
 $("refreshPage").addEventListener("click",()=>analyze().catch(e=>addBubble(e.message||"Could not analyze the page.")));
-analyze().catch(e=>{ $("pageTitle").textContent="Page Coach"; $("analysisText").textContent=e.message||"Could not analyze the current page."; $("aiStatus").textContent="Waiting"; });
+$("cleanPage").addEventListener("click",()=>smartClean().catch(e=>addBubble(e.message||"Smart clean failed.")));
+$("undoLast").addEventListener("click",()=>restoreLast().catch(e=>addBubble(e.message||"Undo failed.")));
+$("restoreAll").addEventListener("click",()=>restoreAll().catch(e=>addBubble(e.message||"Restore failed.")));
+analyze().then(()=>smartClean({announce:false})).catch(e=>{$("pageTitle").textContent="AI Smart Filter";$("analysisText").textContent=e.message||"Could not analyze the current page.";$("aiStatus").textContent="Waiting"});
