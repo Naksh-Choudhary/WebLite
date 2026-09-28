@@ -82,7 +82,7 @@ WebLite-main/
 6. Select the **WebLite-Chrome** folder itself.
 7. Click **Select Folder**.
 
-Chrome should now show **WebLite 1.5.0** in your extensions.
+Chrome should now show **WebLite 1.6.0** in your extensions.
 
 ### Important
 
@@ -181,9 +181,9 @@ The mode selector should contain:
 Balanced | Study | Saver | Ultra | Custom
 ```
 
-You should also see a small **✦ Page Coach** button in the popup. Study mode includes **Focus Shield**.
+You should also see a small **✦ AI Smart Filter / Page Coach** button in the popup. Open it to see what WebLite hid, undo a hide, restore individual items, restore everything, or ask WebLite about the page.
 
-The extension version should be **1.5.0**.
+The extension version should be **1.6.0**.
 
 If you only see:
 
