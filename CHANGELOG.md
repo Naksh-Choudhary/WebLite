@@ -2,6 +2,19 @@
 
 A short record of how WebLite changed from the first prototype into the current multi-browser build.
 
+## v1.6
+
+Added the reversible AI Smart Filter.
+
+- replaced the one-way Focus Shield idea with reversible page-element filtering
+- added conservative local classification for likely ads, sponsored blocks and promo overlays
+- added optional browser-AI review for uncertain candidates
+- added hidden-item history with individual restore, undo-last and restore-all
+- added conversational restore commands in Page Coach
+- kept hard safety checks around useful/interactive content
+- Smart Filter can run on demand even when WebLite mode is not enabled
+- updated all browser builds to 1.6.0
+
 ## v1.5
 
 Focused on real-site usability and the student workflow.
