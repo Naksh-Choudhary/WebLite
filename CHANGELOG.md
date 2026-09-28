@@ -2,7 +2,9 @@
 
 A short record of how WebLite changed from the first prototype into the current multi-browser build.
 
-## v1.6
+## v1.6 — Final CSC submission build
+
+This is the feature-frozen build prepared for the CSC Back-to-School submission.
 
 Added the reversible AI Smart Filter.
 
@@ -103,4 +105,4 @@ Focused on usability after blocking.
 - browser-specific packages for Chrome, Edge, Brave and Firefox
 - updated tutorial and compatibility notes
 
-This is the current working version in the repository.
+This was the version where Load Once and the multi-browser packages became stable enough for broader testing.
