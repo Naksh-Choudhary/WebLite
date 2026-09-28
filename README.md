@@ -25,7 +25,21 @@ Quick version:
 
 If you are already inside a subfolder on GitHub and cannot see the green **Code** button, return to the main **WebLite** repository page first.
 
-The full guide includes exact browser-by-browser steps, the folder you must select, common errors, and how to confirm you loaded WebLite 1.5.0.
+The full guide includes exact browser-by-browser steps, the folder you must select, common errors, and how to confirm you loaded WebLite 1.6.0.
+
+## WebLite 1.6
+
+WebLite 1.6 turns the old Focus Shield into a **reversible AI Smart Filter**.
+
+- scans likely ad, sponsored, promotional and overlay containers
+- auto-hides only high-confidence clutter with conservative local rules
+- can use a browser-provided language model to review uncertain candidates when available
+- never permanently deletes page elements
+- keeps a visible list of everything hidden
+- supports **Undo last hide**, **Restore everything**, and one-click restoration of individual items
+- lets the user talk to WebLite: “what did you hide?”, “restore item 2”, or “bring everything back”
+- keeps hard guardrails around main/article content, forms, login, payment, consent and captcha surfaces
+- keeps the Apple.com layout safeguards and improved on-demand video playback from 1.5
 
 ## WebLite 1.5
 
