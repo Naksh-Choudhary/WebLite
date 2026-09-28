@@ -36,6 +36,12 @@ That telemetry is for **counting / activity**, not for displaying the contents o
 
 Mode choices and extension preferences are stored with the browser extension storage APIs so WebLite can remember how the user wants it to behave.
 
+## Page Coach
+
+Page Coach has no WebLite AI server. When the browser exposes a built-in language model, WebLite can use that browser-provided model for the text the user asks it to analyze. If no built-in model is available, Page Coach falls back to local text matching and resource heuristics.
+
+WebLite does not upload page text to a WebLite backend.
+
 ## Measurement limitations
 
 Browser performance APIs do not reveal every network byte in every situation. Cached and cross-origin resources may be reported differently, so WebLite treats its transfer numbers as **browser-observed measurements**, not billing-grade network totals.
