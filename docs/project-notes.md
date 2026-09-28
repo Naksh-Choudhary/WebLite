@@ -1,5 +1,9 @@
 # Project notes
 
+## Current version
+
+The current release is **WebLite 1.6.0**. It is the final CSC Back-to-School submission build, but WebLite is still intended to continue as a normal project after the hackathon.
+
 ## The problem
 
 Some web pages load a lot of optional content even when the user mainly wants the useful part of the page.
