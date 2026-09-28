@@ -38,6 +38,21 @@ Primary users:
 
 The same feature can also help teachers or schools when a shared connection is limited.
 
+## WebLite 1.6
+
+For the CSC version, Study Mode now works with the **AI Smart Filter**.
+
+The filter first uses conservative local signals to identify likely ads, sponsored blocks and promotional overlays. If Page Coach can access a browser-provided language model, it can also review uncertain candidates. WebLite keeps the process reversible: every hidden item can be restored individually, the last hide can be undone, or everything can be brought back.
+
+This means a student can say things such as:
+
+- “What did you hide?”
+- “Restore item 2.”
+- “That wasn't an ad — bring it back.”
+- “Restore everything.”
+
+WebLite does not permanently delete page content.
+
 ## How to test it
 
 1. Load a page normally.
