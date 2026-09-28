@@ -38,6 +38,12 @@ Primary users:
 
 The same feature can also help teachers or schools when a shared connection is limited.
 
+## Final submission build
+
+The version prepared for submission is **WebLite 1.6.0**.
+
+It combines the original low-data idea with Study Mode, safer real-site compatibility, on-demand media, live browser-observed telemetry, and the reversible AI Smart Filter. We are treating this as the feature-frozen CSC build so the remaining work is testing, demo recording and submission presentation rather than adding more features.
+
 ## WebLite 1.6
 
 For the CSC version, Study Mode now works with the **AI Smart Filter**.
