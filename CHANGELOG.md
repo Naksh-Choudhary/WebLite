@@ -2,6 +2,19 @@
 
 A short record of how WebLite changed from the first prototype into the current multi-browser build.
 
+## v1.5
+
+Focused on real-site usability and the student workflow.
+
+- changed motion reduction so Balanced/Study no longer cancel every animation
+- added Apple.com compatibility handling for fonts and motion
+- stopped force-replacing page fonts by default
+- redesigned the video placeholder and improved user-requested playback
+- added **Focus Shield** for recognized ad/promo clutter
+- added **Page Coach (beta)** with browser AI when available and a local fallback
+- replaced the extension logo
+- updated all four browser builds to 1.5.0
+
 ## v1.4
 
 Added a real student-focused browsing mode while keeping WebLite useful outside school.
