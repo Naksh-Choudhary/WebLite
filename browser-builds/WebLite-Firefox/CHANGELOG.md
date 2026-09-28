@@ -1,3 +1,11 @@
+# WebLite 1.6.0
+
+- Added reversible **AI Smart Filter**.
+- High-confidence local ad/promo filtering with optional browser-AI review.
+- Added hidden-item list, undo-last, individual restore and restore-all.
+- Page Coach can respond to commands such as “what did you hide?” and “restore item 2”.
+- Kept Apple.com layout safeguards and improved on-demand media behavior.
+
 # WebLite 1.4.0
 
 - Added **Study mode** for students using limited data, hotspots, slow home internet or crowded school Wi-Fi.
