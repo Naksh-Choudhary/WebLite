@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "WebLite",
-  "version": "1.5.0",
-  "description": "WebLite for Firefox: Study Mode, Focus Shield, safer layouts, on-demand media, live savings, and Page Coach beta.",
+  "version": "1.6.0",
+  "description": "WebLite for Firefox: Study Mode, reversible AI Smart Filter, safer layouts, on-demand media, live savings, and Page Coach.",
   "permissions": [
     "storage",
     "tabs",
