@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "WebLite",
-  "version": "1.4.0",
-  "description": "WebLite for Chrome: lighter browsing with Study Mode, live savings, privacy-friendly telemetry, Motion Shield, and load-once media.",
+  "version": "1.5.0",
+  "description": "WebLite for Chrome: Study Mode, Focus Shield, safer layouts, on-demand media, live savings, and Page Coach beta.",
   "minimum_chrome_version": "121",
   "permissions": [
     "storage",
