@@ -379,8 +379,8 @@ function hiddenSmartItems() {
   });
 }
 
-function runLocalSmartFilter(root = document) {
-  if (!(activeConfig?.smartFilter || activeConfig?.focusShield)) return { hidden: 0, candidates: [] };
+function runLocalSmartFilter(root = document, force = false) {
+  if (!force && !(activeConfig?.smartFilter || activeConfig?.focusShield)) return { hidden: 0, candidates: [] };
   const candidates = smartCandidates(root);
   let hidden = 0;
   for (const meta of candidates) {
@@ -565,7 +565,7 @@ EXT.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return;
   }
   if (message.type === "RUN_SMART_FILTER") {
-    const result = runLocalSmartFilter(document);
+    const result = runLocalSmartFilter(document, Boolean(message.force));
     sendResponse({ ok:true, ...result, state:hiddenSmartItems() });
     return;
   }
