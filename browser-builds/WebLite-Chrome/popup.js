@@ -288,7 +288,7 @@ document.querySelectorAll(".mode-tab").forEach(b=>b.addEventListener("click",()=
 [imagesSelect,mediaToggle,fontsToggle,framesSelect,motionSelect,autoplayToggle,focusShieldToggle].forEach(el=>el.addEventListener("change",onCustomChanged));
 $("tutorialButton").addEventListener("click",async()=>{await EXT.runtime.sendMessage({type:"OPEN_TUTORIAL"});window.close();});
 $("settingsButton").addEventListener("click",async()=>{await EXT.runtime.sendMessage({type:"OPEN_SETTINGS"});window.close();});
-$("pageCoachButton").addEventListener("click",async()=>{await EXT.runtime.sendMessage({type:"OPEN_ASSISTANT"});window.close();});
+$("pageCoachButton").addEventListener("click",async()=>{await EXT.runtime.sendMessage({type:"OPEN_ASSISTANT",tabId:activeTab?.id});window.close();});
 rememberMode.addEventListener("change",async()=>{settings.rememberSiteMode=rememberMode.checked;await EXT.runtime.sendMessage({type:"SAVE_SETTINGS",settings:{rememberSiteMode:rememberMode.checked}});});
 window.addEventListener("unload",()=>{if(liveTimer)clearInterval(liveTimer);});
 
